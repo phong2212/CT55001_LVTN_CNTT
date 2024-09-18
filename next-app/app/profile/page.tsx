@@ -6,7 +6,7 @@ import Image from 'next/image'
 
 const page = () => {
     return (
-        <div className='bg-sky-300 py-28 h-full w-full flex items-center justify-center'>
+        <div className='bg-primary pb-10 h-full w-full flex items-center justify-center'>
             <UserProfile />
 
         </div>

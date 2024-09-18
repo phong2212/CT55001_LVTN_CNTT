@@ -9,7 +9,7 @@ export default function SearchBar() {
     const [rooms, setRooms] = useState(1);
     const [pets, setPets] = useState(false);
 
-    const { searchDest } = useGlobalUpdate();
+    const { searchHotel } = useGlobalUpdate();
     const [searchTerm, setSearchTerm] = useState('');
 
     const handleSearchChange = (e: any) => {
@@ -27,7 +27,7 @@ export default function SearchBar() {
         if (searchElement) {
             searchElement.classList.remove('invisible');
         }
-        searchDest(searchTerm);
+        searchHotel(searchTerm);
     };
 
 

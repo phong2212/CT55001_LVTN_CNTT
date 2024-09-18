@@ -13,16 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Destinations {
-  id          String @id @default(cuid()) @map("_id")
-  name        String
-  description String
-  continent   String
-  country     String
-  city        String
-  imageURL    String
-}
-
 enum UserRole {
   ADMIN
   USER
@@ -39,19 +29,40 @@ model Users {
   role      UserRole @default(USER)
 }
 
-model Blogs {
-  id       String @id @default(cuid()) @map("_id")
-  authorId String @unique
-  title    String
-  content  String
-  imageURL String
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+model Hotels {
+  id          String   @id @default(cuid()) @map("_id")
+  name        String
+  location    String
+  city        String
+  rating      Float
+  description String?
+  amenities   Json?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
 }
 
-model Favorite {
-  id            String @id @default(cuid()) @map("_id")
-  userId        String @unique
-  destinationId String @unique
+model Rooms {
+  id               String   @id @default(cuid()) @map("_id")
+  hotelId          Int
+  roomType         String
+  capacityAdults   Int
+  capacityChildren Int
+  pricePerNight    Float
+  numberOfRooms    Int
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @default(now()) @updatedAt @map("updated_at")
+}
+
+model Availability {
+  id             String   @id @default(cuid()) @map("_id")
+  roomId         Int
+  date           DateTime
+  availableRooms Int
+}
+
+model HotelImages {
+  id          String  @id @default(cuid()) @map("_id")
+  hotelId     Int
+  imageUrl    String
+  description String?
 }

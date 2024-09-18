@@ -1,6 +1,6 @@
 'use client'
 
-import Dest from '@/app/components/Destinations/dest'
+import Dest from '@/app/components/Hotels/dest'
 import React from 'react'
 
 const DestinationsPage = () => {

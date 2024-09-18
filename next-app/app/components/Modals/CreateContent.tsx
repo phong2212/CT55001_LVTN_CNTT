@@ -6,33 +6,34 @@ import React, { useState } from 'react'
 import toast from 'react-hot-toast';
 
 function CreateContent() {
-    const { allDests, closeModal } = useGlobalState();
     const [name, setName] = useState('');
+    const [location, setLocation] = useState('');
+    const [city , setCity ] = useState('');
+    const [rating, setRating] = useState(0.0);
     const [description, setDescription] = useState('');
-    const [continent, setContinent] = useState('');
-    const [country, setCountry] = useState('');
-    const [city, setCity] = useState('');
-    const [imageURL, setImageURL] = useState('');
-
+    const [amenities, setAmenities] = useState({ wifi: false, pool: false, gym: false });
     const handleChange = (name: string) => (e: any) => {
         switch (name) {
             case 'name':
                 setName(e.target.value);
                 break;
+            case 'location':
+                setLocation(e.target.value);
+                break;
+            case 'city':
+                setCity (e.target.value);
+                break;
+            case 'rating':
+                setRating(parseFloat(e.target.value));
+                break;
             case 'description':
                 setDescription(e.target.value);
                 break;
-            case 'continent':
-                setContinent(e.target.value);
-                break;
-            case 'country':
-                setCountry(e.target.value);
-                break;
-            case 'city':
-                setCity(e.target.value);
-                break;
-            case 'imageURL':
-                setImageURL(e.target.value);
+            case 'amenities':
+                setAmenities({
+                    ...amenities,
+                    [e.target.name]: e.target.checked
+                });
                 break;
             default:
                 break;
@@ -42,29 +43,27 @@ function CreateContent() {
     const handleSubmit = async (e: any) => {
         e.preventDefault();
 
-        const destinations = {
+        const hotels = {
             name,
-            description,
-            continent,
-            country,
+            location,
             city,
-            imageURL
+            rating,
+            description,
+            amenities
         };
 
         try {
-            const res = await axios.post("/api/destinations", destinations);
+            const res = await axios.post("/api/hotels", hotels);
 
             if (res.data.error) {
                 toast.error(res.data.error);
             }
 
             if (!res.data.error) {
-                toast.success("Tạo địa điểm thành công!");
-                allDests();
-                closeModal();
+                toast.success("Tạo khách sạn thành công!");
             }
         } catch (error) {
-            toast.error("Tạo địa điểm thất bại!");
+            toast.error("Tạo khách sạn thất bại!");
             console.error(error);
         }
     }
@@ -73,10 +72,10 @@ function CreateContent() {
         <form className='container px-20 caret-transparent' onSubmit={handleSubmit}>
             <div className="space-y-12">
                 <div className="border-b border-gray-900/10 pb-12">
-                    <h2 className="text-2xl mb-8 text-center font-semibold leading-7 text-gray-100">Tạo địa điểm mới</h2>
+                    <h2 className="text-2xl mb-8 text-center font-semibold leading-7 text-gray-100">Tạo khách sạn mới</h2>
                     <label className="form-control w-full max-w-xs mt-2">
                         <div className="label">
-                            <span className="label-text text-gray-300">Tên địa điểm</span>
+                            <span className="label-text text-gray-300">Tên khách sạn</span>
                         </div>
                         <input
                             type="text"
@@ -85,15 +84,64 @@ function CreateContent() {
                             name="name"
                             onChange={handleChange("name")}
                             className="input input-bordered w-full max-w-xs"
-                            placeholder="Nhập tên địa điểm..."
+                            placeholder="Nhập tên khách sạn..."
                         />
                     </label>
+
+                    <label className="form-control w-full max-w-xs mt-2">
+                        <div className="label">
+                            <span className="label-text text-gray-300">Vị trí khách sạn</span>
+                        </div>
+                        <input
+                            type="text"
+                            id="location"
+                            value={location}
+                            name="location"
+                            onChange={handleChange("location")}
+                            className="input input-bordered w-full max-w-xs"
+                            placeholder="Nhập tên khách sạn..."
+                        />
+                    </label>
+
+                    <label className="form-control w-full max-w-xs mt-2">
+                        <div className="label">
+                            <span className="label-text text-gray-300">Tên quốc gia</span>
+                        </div>
+                        <input
+                            type="text"
+                            id="city"
+                            value={city}
+                            name="city"
+                            onChange={handleChange("city")}
+                            className="input input-bordered w-full max-w-xs"
+                            placeholder="Nhập tên khách sạn..."
+                        />
+                    </label>
+
+                    <label className="form-control w-full max-w-xs mt-2">
+                        <div className="label">
+                            <span className="label-text text-gray-300">Điểm rating</span>
+                        </div>
+                        <input
+                            type="number"
+                            id="rating"
+                            value={rating}
+                            name="rating"
+                            onChange={handleChange("rating")}
+                            className="input input-bordered w-full max-w-xs"
+                            placeholder="Nhập điểm rating..."
+                            min="1"
+                            max="5"
+                            step="0.1"
+                        />
+                    </label>
+
                     <label className=' form-control w-full max-w-xs mt-2'>
                         <div className="label">
                             <span className="label-text text-gray-300 ">Mô tả</span>
                         </div>
                         <textarea
-                            id="tittle"
+                            id="description"
                             value={description}
                             name="description"
                             onChange={handleChange("description")}
@@ -105,68 +153,38 @@ function CreateContent() {
 
                     <label className="form-control w-full max-w-xs mt-2">
                         <div className="label">
-                            <span className="label-text text-gray-300">Tên châu lục</span>
-                        </div>
-                        <select
-                            className="select select-bordered w-full max-w-xs"
-                            id="continent"
-                            name="continent"
-                            value={continent}
-                            onChange={handleChange("continent")}
-                        >
-                            <option disabled value="">Chọn châu lục</option>
-                            <option value="Châu Á">Châu Á</option>
-                            <option value="Châu Âu">Châu Âu</option>
-                            <option value="Châu Mỹ">Châu Mỹ</option>
-                            <option value="Châu Đại Dương">Châu Đại Dương</option>
-                            <option value="Châu Phi">Châu Phi</option>
-                        </select>
-                    </label>
-
-
-                    <label className="form-control w-full max-w-xs mt-2">
-                        <div className="label">
-                            <span className="label-text text-gray-300">Tên quốc gia</span>
+                            <span className="label-text text-gray-300">WiFi</span>
                         </div>
                         <input
-                            type="text"
-                            id="country"
-                            value={country}
-                            name="country"
-                            onChange={handleChange("country")}
-                            className="input input-bordered w-full max-w-xs"
-                            placeholder="Nhập tên quốc gia..."
+                            type="checkbox"
+                            name="wifi"
+                            checked={amenities.wifi}
+                            onChange={handleChange("amenities")}
+                            className="checkbox"
                         />
                     </label>
-
                     <label className="form-control w-full max-w-xs mt-2">
                         <div className="label">
-                            <span className="label-text text-gray-300">Tên thành phố</span>
+                            <span className="label-text text-gray-300">Pool</span>
                         </div>
                         <input
-                            type="text"
-                            id="city"
-                            value={city}
-                            name="city"
-                            onChange={handleChange("city")}
-                            className="input input-bordered w-full max-w-xs"
-                            placeholder="Nhập thành phố..."
+                            type="checkbox"
+                            name="pool"
+                            checked={amenities.pool}
+                            onChange={handleChange("amenities")}
+                            className="checkbox"
                         />
                     </label>
-
-
                     <label className="form-control w-full max-w-xs mt-2">
                         <div className="label">
-                            <span className="label-text text-gray-300">Link ảnh</span>
+                            <span className="label-text text-gray-300">Gym</span>
                         </div>
                         <input
-                            type="text"
-                            id="imageURL"
-                            value={imageURL}
-                            name="imageURL"
-                            onChange={handleChange("imageURL")}
-                            className="input input-bordered w-full max-w-xs"
-                            placeholder="Nhập link ảnh..."
+                            type="checkbox"
+                            name="gym"
+                            checked={amenities.gym}
+                            onChange={handleChange("amenities")}
+                            className="checkbox"
                         />
                     </label>
 
@@ -174,7 +192,7 @@ function CreateContent() {
                 </div>
             </div>
             <div className="flex items-center justify-end gap-x-6">
-                <button type="button" className="text-sm font-semibold leading-6 text-red-500" onClick={closeModal}>
+                <button type="button" className="text-sm font-semibold leading-6 text-red-500" >
                     Hủy
                 </button>
                 <button

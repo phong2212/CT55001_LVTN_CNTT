@@ -69,7 +69,6 @@ const NavBar = () => {
                                         Thông tin cá nhân
                                     </Link>
                                 </li>
-                                <li><Link href={"/favorite"}>Yêu thích</Link></li>
                                 {isAdmin && <li><a href={"/manager"}>Quản lý</a></li>}
                                 <li><button onClick={() => signOut(() => router.push("/"))}>Đăng xuất</button></li>
                             </ul>

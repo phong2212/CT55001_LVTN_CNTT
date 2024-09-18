@@ -1,11 +1,9 @@
 'use client'
 
-
-import { useGlobalState, useGlobalUpdate } from '@/app/context/globalProvider';
-import React, { useState} from 'react'
-import toast from 'react-hot-toast';
-import SearchDest from '../Search/SearchDest';
+import React from 'react'
 import SearchBar from '../Search/SearchBar';
+import CreateContent from '../Modals/CreateContent';
+import SearchHotel from '../Search/SearchHotel';
 
 function HomePage() {
 
@@ -15,16 +13,16 @@ function HomePage() {
             <div className="bg-primary h-72 caret-transparent relative">
                 <div className="flex flex-col items-center justify-center">
 
-                    <p className="text-4xl font-bold m-20 text-white">Tìm kiếm khách sạn tại đây</p>
+                    <p className="text-5xl font-bold m-16 text-white">Tìm kiếm khách sạn tại đây</p>
 
                     <SearchBar />
                 </div>
             </div>
-            <SearchDest />
+            <SearchHotel />
             
            
-           <div className='container h-80'>
-
+           <div className='container h-full'>
+            <CreateContent />
            </div>
         </div >
     )

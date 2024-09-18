@@ -5,14 +5,13 @@ import Carousel from '../Carousel/Carousel';
 import { KeenSliderOptions, useKeenSlider } from 'keen-slider/react';
 import { arrowLeft, arrowRight, poll } from '@/app/utils/Icons';
 
-interface Destinations {
+interface Hotels {
     id: string;
     name: string;
-    imageURL: string;
 }
 
-function SearchDest() {
-    const { Searchdestinations, isLoadingSearch } = useGlobalState();
+function SearchHotel() {
+    const { searchHotels, isLoadingSearch } = useGlobalState();
     const [loaded, setLoaded] = useState(false);
     const [noResults, setNoResults] = useState(false);
     const ksOptions: KeenSliderOptions = {
@@ -32,12 +31,12 @@ function SearchDest() {
 
     useEffect(() => {
         instanceRef.current?.update(ksOptions);
-        if (Searchdestinations.length === 0 && !isLoadingSearch) {
+        if (searchHotels.length === 0 && !isLoadingSearch) {
             setNoResults(true);
         } else {
             setNoResults(false);
         }
-    }, [Searchdestinations, isLoadingSearch]);
+    }, [searchHotels, isLoadingSearch]);
 
     return (
         <div className='bg-base-200 px-16 py-12 my-16 mx-36 rounded-badge drop-shadow-lg'>
@@ -62,13 +61,12 @@ function SearchDest() {
                 </div>
             ) : (
                 <div ref={sliderRef} className='keen-slider mt-8 flex flex-row relative overflow-hidden'>
-                    {Searchdestinations.map((search: Destinations, index: number) => (
+                    {searchHotels.map((search: Hotels, index: number) => (
                         <div key={index} className={`keen-slider__slide number-slide${index + 1}`}>
                             <Carousel
                                 key={search.id}
                                 id={search.id}
                                 name={search.name}
-                                imageURL={search.imageURL}
                             />
                         </div>
                     ))}
@@ -93,4 +91,4 @@ function SearchDest() {
     );
 }
 
-export default SearchDest;
+export default SearchHotel;
