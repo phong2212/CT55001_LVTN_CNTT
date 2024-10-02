@@ -1,9 +1,10 @@
 'use client'
 
-import React, { useState } from 'react'
+import React from 'react'
 import { useGlobalState, useGlobalUpdate } from '../../context/GlobalProvider';
 import UserItem from '../UserItem/UserItem';
-
+import SearchForm from './SearchForm';
+import Pagination from './Pagination';
 
 interface Props {
     title: string;
@@ -20,14 +21,14 @@ interface Users {
 }
 
 function User({ title }: Props) {
-    const { users, currentPageUser, searchTermUser, setSearchTermUser, totalPagesUser, setCurrentPageUser, isLoading } = useGlobalState();
-    const { allUsers } = useGlobalUpdate();
+    const { users, currentPageUser, searchTermUser, isLoading, totalPagesUser } = useGlobalState();
+    const { allUsers, setSearchTermUser, setCurrentPageUser } = useGlobalUpdate();
 
-    const handleSearchChange = (e: any) => {
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTermUser(e.target.value);
     };
 
-    const handleSearchSubmit = (e: any) => {
+    const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         allUsers(1, searchTermUser);
     };
@@ -45,62 +46,52 @@ function User({ title }: Props) {
     };
 
     return (
-        <div className='p-2 w-full bg-white border-2 border-solid border-gray-300 rounded-2xl overflow-hidden caret-transparent'>
+        <div className='p-2 w-full bg-white rounded-2xl overflow-hidden'>
             <div className='flex flex-row justify-between my-5 mx-5'>
-                <h1 className='relative text-2xl font-extrabold'>{title}</h1>
-                <form onSubmit={handleSearchSubmit}>
-                    <div className='form-control flex flex-row'>
-                        <input
-                            type="text"
-                            value={searchTermUser}
-                            className='input input-bordered w-24 md:w-auto'
-                            onChange={handleSearchChange}
-                            placeholder="Tìm kiếm..."
-                        />
-                        <button type='submit' className="btn btn-ghost btn-circle">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                        </button>
-                    </div>
-                </form>
+                <h1 className='text-2xl font-extrabold'>{title}</h1>
+                <SearchForm 
+                    searchTerm={searchTermUser} 
+                    onSearchChange={handleSearchChange} 
+                    onSearchSubmit={handleSearchSubmit} 
+                />
             </div>
             {!isLoading ? (
-                <table className="table table-xs">
-                    <thead>
+                <table className="table w-full border-collapse border border-gray-300">
+                    <thead className="bg-gray-200">
                         <tr>
-                            <th>Email</th>
-                            <th>Tên</th>
-                            <th>Họ</th>
-                            <th>Ngày tạo tài khoản</th>
-                            <th>Ảnh đại diện</th>
-                            <th>Xóa</th>
+                            <th className="border border-gray-300 p-2">Email</th>
+                            <th className="border border-gray-300 p-2">Tên</th>
+                            <th className="border border-gray-300 p-2">Họ</th>
+                            <th className="border border-gray-300 p-2">Ngày tạo tài khoản</th>
+                            <th className="border border-gray-300 p-2">Ảnh đại diện</th>
+                            <th className="border border-gray-300 p-2">Xóa</th>
                         </tr>
                     </thead>
                     <tbody>
                         {users.map((user: Users) => (
-                            <UserItem
-                                key={user.id}
-                                id={user.clerkId}
-                                email={user.email}
-                                firstname={user.firstName}
-                                lastname={user.lastName}
-                                createdAt={new Date(user.createdAt)}
-                                photo={user.photo}
+                            <UserItem 
+                                key={user.id} 
+                                id={user.id} 
+                                email={user.email} 
+                                firstname={user.firstName} 
+                                lastname={user.lastName} 
+                                createdAt={new Date(user.createdAt)} 
+                                photo={user.photo} 
                             />
                         ))}
                     </tbody>
                 </table>
             ) : (
-                <div>
-                    <div className='flex flex-row justify-center items-center h-[27.7rem]'>
-                        <span className="loading loading-spinner loading-lg"></span>
-                    </div>
+                <div className='flex justify-center items-center h-[27.7rem]'>
+                    <span className="loading loading-spinner loading-lg"></span>
                 </div>
             )}
-            <div className='join flex justify-center mt-2'>
-                <button className='join-item btn' onClick={goToPreviousPage} disabled={currentPageUser <= 1}>Trước</button>
-                <span className='join-item btn'>{currentPageUser} </span>
-                <button className='join-item btn' onClick={goToNextPage} disabled={currentPageUser >= totalPagesUser}>Sau</button>
-            </div>
+            <Pagination 
+                currentPage={currentPageUser} 
+                totalPages={totalPagesUser} 
+                onNextPage={goToNextPage} 
+                onPreviousPage={goToPreviousPage} 
+            />
         </div>
     );
 }
