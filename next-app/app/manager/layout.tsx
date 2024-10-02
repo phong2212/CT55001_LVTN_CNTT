@@ -1,23 +1,24 @@
 'use client'
 
 import SideBar from "../components/SideBar/SideBar";
-import { useGlobalState } from "../context/globalProvider";
+import { useGlobalState } from "../context/GlobalProvider";
 import NotFound from "../not-found";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     const { isAdmin, isLoadingAdmin } = useGlobalState();
 
-    return (
-        isLoadingAdmin ? (
-            <div className='overflow-hidden'>
-                <div className='flex flex-row justify-center items-end h-[24rem]'>
+    if (isLoadingAdmin) {
+        return   <div className='flex justify-center items-center h-screen'>
                     <span className="loading loading-spinner loading-lg"></span>
-                </div>
-            </div>
-        ) : isAdmin ? (
-            <div data-theme="dark" className='p-10 flex gap-10 h-screen'>
+                </div>; 
+    }
+    return (
+        isAdmin ? (
+            <div data-theme="light" className='flex h-screen'>
                 <SideBar />
-                {children}
+                <div className='flex-1 p-10 overflow-auto'>
+                    {children}
+                </div>
             </div>
         ) : (
             <NotFound />

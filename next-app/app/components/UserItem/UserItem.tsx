@@ -1,4 +1,4 @@
-import { useGlobalState } from '@/app/context/globalProvider';
+import { useGlobalState } from '@/app/hooks/useGlobalState';
 import { trash } from '@/app/utils/Icons';
 import Image from 'next/image';
 import React, { useState } from 'react';

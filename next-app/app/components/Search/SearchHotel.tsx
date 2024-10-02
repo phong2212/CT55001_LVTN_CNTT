@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useGlobalState } from '@/app/context/globalProvider';
+import { useGlobalState } from '@/app/hooks/useGlobalState';
 import 'keen-slider/keen-slider.min.css'
 import Carousel from '../Carousel/Carousel';
 import { KeenSliderOptions, useKeenSlider } from 'keen-slider/react';

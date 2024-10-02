@@ -1,4 +1,4 @@
-import { useGlobalUpdate } from "@/app/context/globalProvider";
+import { useGlobalUpdate } from "@/app/hooks/useGlobalUpdate";
 import { useState } from "react";
 import toast from "react-hot-toast";
 

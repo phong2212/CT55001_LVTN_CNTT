@@ -1,6 +1,6 @@
 'use client'
 
-import { useGlobalState } from '@/app/context/globalProvider';
+import { useGlobalState } from '@/app/hooks/useGlobalState';
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';

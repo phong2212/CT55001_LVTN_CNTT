@@ -5,7 +5,7 @@ import React from 'react'
 import { usePathname, useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import { useClerk, useUser } from '@clerk/nextjs';
-import { useGlobalState } from '@/app/context/globalProvider';
+import { useGlobalState } from '@/app/hooks/useGlobalState';
 import Image from 'next/image';
 
 
@@ -14,7 +14,7 @@ const NavBar = () => {
     const pathname = usePathname();
     const isManagerPath = /^\/manager(\/|$)/.test(pathname);
     const isSignInPath = /^\/sign-in(\/|$)/.test(pathname);
-    const isSignOutPath = /^\/sign-up(\/|$)/.test(pathname);
+    const isSignUpPath = /^\/sign-up(\/|$)/.test(pathname);
     const { user } = useUser();
     const { signOut } = useClerk();
     const router = useRouter();
@@ -24,13 +24,14 @@ const NavBar = () => {
         imageUrl: "https://cdn3.iconfinder.com/data/icons/avatar-165/536/NORMAL_HAIR-512.png"
     };
 
+    const shouldHideNavbar = isManagerPath || isSignUpPath || isSignInPath;
+
+    if (shouldHideNavbar) {
+        return null;
+    }
+
     return (
-        <nav className={clsx(
-            'bg-primary py-3 px-32 top-0 w-full z-10 caret-transparent',
-            {
-                'invisible': isManagerPath || isSignOutPath || isSignInPath,
-            },
-        )}>
+        <nav className='bg-primary py-3 px-32 top-0 w-full z-10 caret-transparent'>
             <div className="navbar">
                 <div className="flex-1">
                     <Link href={"/"} className="btn btn-ghost text-3xl text-base-100">Booking</Link>

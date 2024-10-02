@@ -13,12 +13,15 @@ const Footer = () => {
     const pathname = usePathname();
     const isManagerPath = /^\/manager(\/|$)/.test(pathname);
     const isSignInPath = /^\/sign-in(\/|$)/.test(pathname);
-    const isSignOutPath = /^\/sign-up(\/|$)/.test(pathname);
+    const isSignUpPath = /^\/sign-up(\/|$)/.test(pathname);
 
-    return <div className={clsx('', {
-        'invisible absolute top-0': isManagerPath || isSignOutPath || isSignInPath,
-    },
-    )}>
+    const shouldHideFooter = isManagerPath || isSignInPath || isSignUpPath;
+
+    if (shouldHideFooter) {
+        return null;
+    }
+
+    return <div className=''>
         <hr />
         <div className="footer p-10 bg-base-100 text-base-content flex justify-between caret-transparent">
             <aside>

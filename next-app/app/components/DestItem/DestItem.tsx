@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { edit, trash } from '@/app/utils/Icons';
-import { useGlobalState } from '@/app/context/globalProvider';
+import { useGlobalState } from '@/app/hooks/useGlobalState';
 import UpdateContent from '../Modals/UpdateContent';
 
 interface Props {

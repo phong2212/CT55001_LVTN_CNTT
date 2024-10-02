@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useGlobalState, useGlobalUpdate } from '../../context/globalProvider';
+import { useGlobalState, useGlobalUpdate } from '../../context/GlobalProvider';
 import UserItem from '../UserItem/UserItem';
 
 
@@ -22,7 +22,6 @@ interface Users {
 function User({ title }: Props) {
     const { users, currentPageUser, searchTermUser, setSearchTermUser, totalPagesUser, setCurrentPageUser, isLoading } = useGlobalState();
     const { allUsers } = useGlobalUpdate();
-
 
     const handleSearchChange = (e: any) => {
         setSearchTermUser(e.target.value);
@@ -46,7 +45,7 @@ function User({ title }: Props) {
     };
 
     return (
-        <div className='p-2 w-full bg-gray-800 border-2 border-solid border-gray-600 rounded-2xl overflow-hidden caret-transparent'>
+        <div className='p-2 w-full bg-white border-2 border-solid border-gray-300 rounded-2xl overflow-hidden caret-transparent'>
             <div className='flex flex-row justify-between my-5 mx-5'>
                 <h1 className='relative text-2xl font-extrabold'>{title}</h1>
                 <form onSubmit={handleSearchSubmit}>

@@ -1,5 +1,5 @@
 'use client';
-import { useGlobalState } from '@/app/context/globalProvider';
+import { useGlobalState } from '@/app/hooks/useGlobalState';
 import React from 'react';
 
 interface Props {
