@@ -35,7 +35,7 @@ function UpdateContent({ destinationId }: Props) {
     }, [destinationId]);
 
 
-    const handleChange = (e: any) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setDestination(prevState => ({
             ...prevState,
@@ -43,7 +43,7 @@ function UpdateContent({ destinationId }: Props) {
         }));
     };
 
-    const handleSubmit = async (e: any) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         try {
@@ -57,8 +57,8 @@ function UpdateContent({ destinationId }: Props) {
                 closeModal();
             }
         } catch (error) {
-            toast.error("Cập nhật địa điểm thất bại!");
-            console.error(error);
+            toast.error("Cập nhật địa điểm thất bại! " + (error instanceof Error ? error.message : ''));
+            console.error("Error updating destination:", error);
         }
     };
 

@@ -5,7 +5,7 @@ import menu from "@/app/utils/menu"
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation';
 import clsx from 'clsx';
-import { signout, menu as menuIcon, arrowRight, arrowLeft } from '@/app/utils/Icons';
+import { signout, arrowRight, arrowLeft } from '@/app/utils/Icons';
 import { useClerk } from '@clerk/nextjs';
 
 const SideBar = React.memo(() => {
@@ -31,11 +31,11 @@ const SideBar = React.memo(() => {
                 <button onClick={toggleSidebar} className='btn btn-ghost my-4 w-12 h-12 flex items-center justify-center'>
                     {isCollapsed ? arrowRight : arrowLeft}
                 </button>
-                <a href='/' className={clsx("btn glass text-2xl font-bold transition-all duration-300 mb-4 flex items-center justify-center", {
-                    'w-12 h-12': isCollapsed,
+                <a href='/' className={clsx("btn glass text-2xl font-bold text-sky-500 transition-all duration-300 mb-4 flex items-center justify-center", {
+                    'w-12 h-12 font-extrabold': isCollapsed,
                     'w-54': !isCollapsed,
                 })}>
-                    {isCollapsed ? 'W' : 'Wanderlust'}
+                    {isCollapsed ? 'B' : 'Booking'}
                 </a>
             </div>
             <ul className='flex-grow'>

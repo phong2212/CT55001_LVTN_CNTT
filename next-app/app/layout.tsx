@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import NavBar from "./components/NavBar/NavBar";
-import { ClerkProvider, auth } from '@clerk/nextjs'
+import { ClerkProvider } from '@clerk/nextjs'; // Removed unused 'auth'
 import ContextProvider from "./providers/ContextProvider";
 import NextTopLoader from "nextjs-toploader";
 import Footer from "./components/Footer/Footer";
@@ -39,10 +39,10 @@ export default function RootLayout({
           <NextTopLoader
             height={2}
             color="#0ea5e9"
-            easing="cubic-bezier(0.53,0.21,0,1"
+            easing="cubic-bezier(0.53,0.21,0,1)"
             showSpinner={false}
           />
-          <ContextProvider >
+          <ContextProvider>
             <NavBar />
             {children}
             <Footer />
