@@ -1,11 +1,10 @@
 'use client'
 
-import { useGlobalState } from '@/app/hooks/useGlobalState';
 import axios from 'axios';
 import React, { useState } from 'react'
 import toast from 'react-hot-toast';
 
-function CreateContent() {
+function CreateHotel() {
     const [name, setName] = useState('');
     const [location, setLocation] = useState('');
     const [city, setCity] = useState('');
@@ -16,7 +15,7 @@ function CreateContent() {
     const handleChange = (name: keyof typeof amenities | string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { value, type } = e.target;
         if (type === 'checkbox') {
-            const checked = (e.target as HTMLInputElement).checked; // Type assertion
+            const checked = (e.target as HTMLInputElement).checked;
             setAmenities(prev => ({ ...prev, [name]: checked }));
         } else {
             switch (name) {
@@ -129,4 +128,4 @@ function CreateContent() {
     )
 }
 
-export default CreateContent;
+export default CreateHotel;

@@ -3,8 +3,8 @@
 import React from 'react'
 import { useGlobalState, useGlobalUpdate } from '../../context/GlobalProvider';
 import UserItem from '../UserItem/UserItem';
-import SearchForm from './SearchForm';
-import Pagination from './Pagination';
+import SearchForm from '../SearchForm/SearchForm';
+import Pagination from '../Pagination/Pagination';
 
 interface Props {
     title: string;
@@ -21,8 +21,8 @@ interface Users {
 }
 
 function User({ title }: Props) {
-    const { users, currentPageUser, searchTermUser, isLoading, totalPagesUser } = useGlobalState();
-    const { allUsers, setSearchTermUser, setCurrentPageUser } = useGlobalUpdate();
+    const { users, currentPageUser, searchTermUser, setSearchTermUser, setCurrentPageUser, isLoading, totalPagesUser } = useGlobalState();
+    const { allUsers} = useGlobalUpdate();
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTermUser(e.target.value);

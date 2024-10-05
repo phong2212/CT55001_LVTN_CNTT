@@ -2,7 +2,7 @@
 
 import React from 'react'
 import SearchBar from '../Search/SearchBar';
-import CreateContent from '../Modals/CreateContent';
+import CreateHotel from '../Modals/CreateHotel';
 import SearchHotel from '../Search/SearchHotel';
 
 function HomePage() {
@@ -22,7 +22,7 @@ function HomePage() {
             
            
            <div className='container h-full'>
-            <CreateContent />
+            <CreateHotel />
            </div>
         </div >
     )
