@@ -34,6 +34,7 @@ export default function RootLayout({
             crossOrigin="anonymous"
             referrerPolicy="no-referrer" />
           <link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css" />
+          <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
         </head>
         <body className={inter.className}>
           <NextTopLoader

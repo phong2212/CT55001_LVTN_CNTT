@@ -1,10 +1,12 @@
 'use client'
 
+import { useGlobalState } from '@/app/hooks/useGlobalState';
 import axios from 'axios';
 import React, { useState } from 'react'
 import toast from 'react-hot-toast';
 
 function CreateHotel() {
+    const { allHotels, closeModal } = useGlobalState();
     const [name, setName] = useState('');
     const [location, setLocation] = useState('');
     const [city, setCity] = useState('');
@@ -32,7 +34,7 @@ function CreateHotel() {
     const renderInput = (id: string, label: string, value: string | number, name: string, type: string = 'text') => (
         <label className="form-control w-full max-w-xs mt-2">
             <div className="label">
-                <span className="label-text text-gray-300">{label}</span>
+                <span className="label-text ">{label}</span>
             </div>
             <input
                 type={type}
@@ -42,6 +44,8 @@ function CreateHotel() {
                 onChange={handleChange(name)}
                 className="input input-bordered w-full max-w-xs"
                 placeholder={`Nhập ${label.toLowerCase()}...`}
+                min={type === 'number' ? '1' : undefined}
+                max={type === 'number' ? '5' : undefined}
             />
         </label>
     );
@@ -67,6 +71,8 @@ function CreateHotel() {
 
             if (!res.data.error) {
                 toast.success("Tạo khách sạn thành công!");
+                allHotels();
+                closeModal();
             }
         } catch (error) {
             toast.error("Tạo khách sạn thất bại!");
@@ -78,14 +84,14 @@ function CreateHotel() {
         <form className='container px-20 caret-transparent' onSubmit={handleSubmit}>
             <div className="space-y-12">
                 <div className="border-b border-gray-900/10 pb-12">
-                    <h2 className="text-2xl mb-8 text-center font-semibold leading-7 text-gray-100">Tạo khách sạn mới</h2>
-                    {renderInput("tittle", "Tên khách sạn", name, "name")}
-                    {renderInput("location", "Vị trí khách sạn", location, "location")}
-                    {renderInput("city", "Tên quốc gia", city, "city")}
+                    <h2 className="text-2xl mb-8 text-center font-semibold leading-7">Tạo khách sạn mới</h2>
+                    {renderInput("name", "Tên khách sạn", name, "name")}
+                    {renderInput("location", "Địa chỉ khách sạn", location, "location")}
+                    {renderInput("city", "Tên thành phố", city, "city")}
                     {renderInput("rating", "Điểm rating", rating, "rating", "number")}
                     <label className='form-control w-full max-w-xs mt-2'>
                         <div className="label">
-                            <span className="label-text text-gray-300">Mô tả</span>
+                            <span className="label-text ">Mô tả</span>
                         </div>
                         <textarea
                             id="description"
@@ -97,24 +103,27 @@ function CreateHotel() {
                             rows={4}
                         />
                     </label>
-                    {['wifi', 'pool', 'gym'].map((amenity) => (
-                        <label className="form-control w-full max-w-xs mt-2" key={amenity}>
-                            <div className="label">
-                                <span className="label-text text-gray-300">{amenity.charAt(0).toUpperCase() + amenity.slice(1)}</span>
-                            </div>
-                            <input
-                                type="checkbox"
-                                name={amenity}
-                                checked={amenities[amenity as keyof typeof amenities]}
-                                onChange={handleChange(amenity)}
-                                className="checkbox"
-                            />
-                        </label>
-                    ))}
+                    <div className="mt-4">
+                        <h3 className="text-lg font-semibold">Tiện nghi</h3>
+                            {['wifi', 'pool', 'gym'].map((amenity) => (
+                                <label className="form-control inline-block mr-4" key={amenity}>
+                                    <div className="label">
+                                        <span className="label-text ">{amenity.charAt(0).toUpperCase() + amenity.slice(1)}</span>
+                                    </div>
+                                    <input
+                                        type="checkbox"
+                                        name={amenity}
+                                        checked={amenities[amenity as keyof typeof amenities]}
+                                        onChange={handleChange(amenity)}
+                                        className="checkbox"
+                                    />
+                                </label>
+                           ))}
+                     </div>
                 </div>
             </div>
             <div className="flex items-center justify-end gap-x-6">
-                <button type="button" className="text-sm font-semibold leading-6 text-red-500">
+                <button type="button" className="text-sm font-semibold leading-6 text-red-500" onClick={closeModal}>
                     Hủy
                 </button>
                 <button

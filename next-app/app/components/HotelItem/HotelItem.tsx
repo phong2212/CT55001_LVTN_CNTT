@@ -1,7 +1,8 @@
 import { useGlobalState } from '@/app/hooks/useGlobalState';
-import { trash } from '@/app/utils/Icons';
+import { trash, edit } from '@/app/utils/Icons';
 import Image from 'next/image';
 import React, { useState } from 'react';
+import UpdateHotel from '../Modals/UpdateHotel';
 
 interface Props {
     id: string;
@@ -21,8 +22,9 @@ interface Props {
 
 function UserItem({ id, name, location, city, rating, description,amenities, createdAt, updatedAt}: Props) {
     const [isZoomed, setIsZoomed] = useState(false);
+    const [isEdit, setIsEdit] = useState(false);
     const [isDelete, setIsDelete] = useState(false);
-    const { deleteUser } = useGlobalState();
+    const { deleteHotel } = useGlobalState();
 
     const ImageClick = () => {
         setIsZoomed(true);
@@ -31,6 +33,14 @@ function UserItem({ id, name, location, city, rating, description,amenities, cre
     const CloseZoom = () => {
         setIsZoomed(false);
     };
+
+    const OpenEdit = () => {
+        setIsEdit(true);
+      };
+    
+      const CloseEdit = () => {
+        setIsEdit(false);
+      };
 
     const OpenDelete = () => {
         setIsDelete(true);
@@ -41,7 +51,7 @@ function UserItem({ id, name, location, city, rating, description,amenities, cre
     };
 
     const handleDelete = () => {
-        deleteUser(id);
+        deleteHotel(id);
         CloseDelete();
     };
 
@@ -72,6 +82,11 @@ function UserItem({ id, name, location, city, rating, description,amenities, cre
                     </div>
                 </td> */}
                 <td className="border border-gray-300 p-2 text-center">
+                    <button className="btn btn-warning text-white" onClick={OpenEdit}>
+                        {edit}
+                    </button>
+                </td>
+                <td className="border border-gray-300 p-2 text-center">
                     <button className="btn btn-error text-white" onClick={OpenDelete}>
                         {trash}
                     </button>
@@ -91,6 +106,17 @@ function UserItem({ id, name, location, city, rating, description,amenities, cre
                     </div>
                 </div>
             )} */}
+             {isEdit && <div className="modal modal-open">
+                <div className='absolute top-0 left-0 w-full h-screen blur' onClick={CloseEdit}></div>
+                    <div className="modal-box">
+                    <UpdateHotel hotelId={id} />
+                        <div className='absolute top-[48.8rem] left-[18.6rem]'>
+                            <button className="text-sm font-semibold leading-6 text-red-500" onClick={CloseEdit}>
+                            Hủy
+                            </button>
+                        </div>
+                    </div>
+                </div>}
             {isDelete && (
                 <div className="modal modal-open">
                     <div className="modal-box">
