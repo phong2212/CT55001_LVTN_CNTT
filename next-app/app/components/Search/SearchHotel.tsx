@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useGlobalState } from '@/app/hooks/useGlobalState';
 import 'keen-slider/keen-slider.min.css';
-import Carousel from '../Carousel/Carousel';
-import { KeenSliderOptions, useKeenSlider } from 'keen-slider/react';
-import { arrowLeft, arrowRight, poll } from '@/app/utils/Icons';
+import { poll } from '@/app/utils/Icons';
 import axios from 'axios';
 
 interface Hotels {
     id: string;
     name: string;
     location: string;
+    city: string;
+    rating: number;
+    description: string;
+    amenities: {
+        wifi: boolean;
+        pool: boolean;
+        gym: boolean;
+    };
     distance?: number;
 }
 
@@ -39,23 +45,8 @@ async function getDistance(origin: { lng: any; lat: any; }, destination: { lat: 
 
 function SearchHotel() {
     const { searchHotels, isLoadingSearch, currentLocation } = useGlobalState();
-    const [loaded, setLoaded] = useState(false);
     const [noResults, setNoResults] = useState(false);
     const [distances, setDistances] = useState<{ [key: string]: number }>({});
-
-    const ksOptions: KeenSliderOptions = {
-        initial: 0,
-        loop: true,
-        mode: 'free-snap',
-        slides: { perView: 3, spacing: 15 },
-        created: () => setLoaded(true),
-    };
-    const [sliderRef, instanceRef] = useKeenSlider(ksOptions);
-
-    useEffect(() => {
-        instanceRef.current?.update(ksOptions);
-        setNoResults(searchHotels.length === 0 && !isLoadingSearch);
-    }, [searchHotels, isLoadingSearch]);
 
     useEffect(() => {
         const calculateDistances = async () => {
@@ -88,26 +79,49 @@ function SearchHotel() {
             </div>
             {noResults ? (
                 <p className="text-red-500 text-2xl mt-8">Không tìm thấy khách sạn!</p>
-            ) : isLoadingSearch ? (
-                <div ref={sliderRef} className="keen-slider mt-8">
-                    <div className='keen-slider__slide number-slide1 skeleton w-32 h-52'></div>
-                    <div className='keen-slider__slide number-slide2 skeleton w-32 h-52'></div>
-                    <div className='keen-slider__slide number-slide3 skeleton w-32 h-52'></div>
-                    <div className='keen-slider__slide number-slide4 skeleton w-32 h-52'></div>
+            ) : isLoadingSearch || Object.keys(distances).length === 0 ? (
+                <div className="mt-8">
+                    <div className='skeleton mt-8 w-full h-56'></div>
+                    <div className='skeleton mt-8 w-full h-56'></div>
+                    <div className='skeleton mt-8 w-full h-56'></div>
+                    <div className='skeleton mt-8 w-full h-56'></div>
                 </div>
             ) : (
-                <div ref={sliderRef} className='keen-slider mt-8 flex flex-row relative overflow-hidden'>
+                <div className='mt-8 flex flex-col space-y-4'>
                     {sortedHotels.map((search: Hotels, index: number) => (
-                        <div key={index} className={`keen-slider__slide number-slide${index + 1}`}>
-                            <Carousel key={search.id} id={search.id} name={search.name} distance={distances[search.id]} />
-                        </div>
+                        distances[search.id] !== null && (
+                            <div key={index} className='bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 flex'>
+                                <img 
+                                    src="https://shac.vn/wp-content/uploads/2016/01/thiet-ke-khach-san-5-sao-ban-dem-ruc-ro-sh-ks-0023-700x622.jpg"
+                                    width={300}
+                                    height={300}
+                                    alt="alt image will remove later"
+                                    className='rounded-lg mr-4'
+                                />
+                                <div className='flex flex-col flex-grow'>
+                                    <a href="#" className='text-xl font-semibold text-sky-500 hover:text-sky-700 transition-colors'>{search.name}</a>
+                                    <p>{search.city} - Cách xa tầm {distances[search.id] !== undefined ? Math.ceil(distances[search.id] * 10) / 10 : distances[search.id]} km</p>
+                                    <div className='flex items-center'>
+                                        {[...Array(5)].map((_, i) => (
+                                            <span key={i} className={`text-yellow-500 ${i < search.rating ? 'fas fa-star' : 'far fa-star'}`}></span>
+                                        ))}
+                                    </div>
+                                    <p>{search.description}</p>
+                                    <p className='font-bold'>Giá: 1,500,000 VNĐ</p>
+                                    <div className='flex justify-between items-center mt-4'>
+                                        <button 
+                                            className='btn btn-primary'
+                                            onClick={() => window.open(`https://www.openstreetmap.org/search?query=${encodeURIComponent(search.location)}`, '_blank')}
+                                        >
+                                            Xem bản đồ
+                                        </button>
+                                        <button className='btn btn-secondary'>Xem chi tiết</button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        )
                     ))}
-                    {loaded && instanceRef.current && (
-                        <>
-                            <button onClick={() => instanceRef.current?.prev()} className='join-item btn btn-base-200 absolute top-[5.2rem] z-10 left-2'>{arrowLeft}</button>
-                            <button onClick={() => instanceRef.current?.next()} className='join-item btn btn-base-200 absolute top-[5.2rem] z-10 right-2'>{arrowRight}</button>
-                        </>
-                    )}
                 </div>
             )}
         </div>

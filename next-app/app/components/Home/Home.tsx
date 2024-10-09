@@ -3,8 +3,11 @@
 import React from 'react'
 import SearchBar from '../Search/SearchBar';
 import SearchHotel from '../Search/SearchHotel';
+import { useGlobalState } from '@/app/hooks/useGlobalState';
 
 function HomePage() {
+    const { searchResult } = useGlobalState();
+
 
     return (
         <div className='h-full caret-transparent'>
@@ -17,7 +20,7 @@ function HomePage() {
                     <SearchBar />
                 </div>
             </div>
-            <SearchHotel />
+            {searchResult && <SearchHotel />}
             
            
            <div className='container h-full'>

@@ -14,7 +14,7 @@ export default function SearchBar() {
     const [pets, setPets] = useState(false);
     const { searchHotel } = useGlobalUpdate();
     const [searchTerm, setSearchTerm] = useState('');
-    const { currentLocation, setCurrentLocation } = useGlobalState();
+    const { currentLocation, setCurrentLocation, openResult } = useGlobalState();
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -35,7 +35,7 @@ export default function SearchBar() {
             toast.error('Hãy điền từ khóa.');
             return;
         }
-        document.getElementById('search')?.classList.remove('invisible');
+        openResult();
         searchHotel(searchTerm, currentLocation);
     };
 
