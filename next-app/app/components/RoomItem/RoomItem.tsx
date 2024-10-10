@@ -1,28 +1,23 @@
 import { useGlobalState } from '@/app/hooks/useGlobalState';
 import { trash, edit } from '@/app/utils/Icons';
 import React, { useState } from 'react';
-import UpdateHotel from '../Modals/UpdateHotel';
 
 interface Props {
     id: string;
-    name: string;
-    location: string;
-    city: string;
-    rating: number;
-    description: string;
-    amenities: {
-        wifi: boolean;
-        pool: boolean;
-        gym: boolean;
-    };
+    hotelId: string;
+    roomType: string;
+    capacityAdults: number;
+    capacityChildren: number;
+    pricePerNight: number;
+    numberOfRooms: number;
     createdAt: string;
     updatedAt: string;
 }
 
-function HotelItem({ id, name, location, city, rating, description,amenities, createdAt, updatedAt}: Props) {
+function UserItem({ id, hotelId, roomType, capacityAdults, capacityChildren, pricePerNight, numberOfRooms, createdAt, updatedAt}: Props) {
     const [isEdit, setIsEdit] = useState(false);
     const [isDelete, setIsDelete] = useState(false);
-    const { deleteHotel } = useGlobalState();
+    const { deleteRoom } = useGlobalState();
 
     const OpenEdit = () => {
         setIsEdit(true);
@@ -41,21 +36,19 @@ function HotelItem({ id, name, location, city, rating, description,amenities, cr
     };
 
     const handleDelete = () => {
-        deleteHotel(id);
+        deleteRoom(id);
         CloseDelete();
     };
 
     return (
         <>
             <tr>
-                <td>{name}</td>
-                <td>{location}</td>
-                <td>{city}</td>
-                <td>{rating} ⭐</td>
-                <td>{description || 'chưa thêm'}</td>
-                <td>{amenities.wifi ? 'Có' : 'Không'}</td>
-                <td>{amenities.pool ? 'Có' : 'Không'}</td>
-                <td>{amenities.gym ? 'Có' : 'Không'}</td>
+                <td>{hotelId}</td>
+                <td>{roomType}</td>
+                <td>{capacityAdults}</td>
+                <td>{capacityChildren}</td>
+                <td>{pricePerNight}</td>
+                <td>{numberOfRooms}</td>
                 <td>{createdAt}</td>
                 <td>{updatedAt}</td>
                 <td className="border border-gray-300 p-2 text-center">
@@ -69,17 +62,17 @@ function HotelItem({ id, name, location, city, rating, description,amenities, cr
                     </button>
                 </td>
             </tr>
-             {isEdit && <div className="modal modal-open">
+             {/* {isEdit && <div className="modal modal-open">
                 <div className='absolute top-0 left-0 w-full h-screen blur' onClick={CloseEdit}></div>
                     <div className="modal-box">
-                    <UpdateHotel hotelId={id} />
+                    <UpdateRoom hotelId={id} />
                         <div className='absolute top-[48.8rem] left-[18.6rem]'>
                             <button className="text-sm font-semibold leading-6 text-red-500" onClick={CloseEdit}>
                             Hủy
                             </button>
                         </div>
                     </div>
-                </div>}
+                </div>} */}
             {isDelete && (
                 <div className="modal modal-open">
                     <div className="modal-box">
@@ -96,4 +89,4 @@ function HotelItem({ id, name, location, city, rating, description,amenities, cr
     );
 }
 
-export default HotelItem;
+export default UserItem;

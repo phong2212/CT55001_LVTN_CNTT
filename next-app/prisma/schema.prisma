@@ -43,7 +43,7 @@ model Hotels {
 
 model Rooms {
   id               String   @id @default(cuid()) @map("_id")
-  hotelId          Int
+  hotelId          String
   roomType         String
   capacityAdults   Int
   capacityChildren Int
@@ -55,14 +55,14 @@ model Rooms {
 
 model Availability {
   id             String   @id @default(cuid()) @map("_id")
-  roomId         Int
+  roomId         String
   date           DateTime
   availableRooms Int
 }
 
 model HotelImages {
   id          String  @id @default(cuid()) @map("_id")
-  hotelId     Int
+  hotelId     String
   imageUrl    String
   description String?
 }
