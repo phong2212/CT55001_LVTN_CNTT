@@ -1,6 +1,7 @@
 import { useGlobalState } from '@/app/hooks/useGlobalState';
 import { trash, edit } from '@/app/utils/Icons';
 import React, { useState } from 'react';
+import UpdateRoom from '../Modals/UpdateRoom';
 
 interface Props {
     id: string;
@@ -62,22 +63,22 @@ function UserItem({ id, hotelId, roomType, capacityAdults, capacityChildren, pri
                     </button>
                 </td>
             </tr>
-             {/* {isEdit && <div className="modal modal-open">
+             {isEdit && <div className="modal modal-open">
                 <div className='absolute top-0 left-0 w-full h-screen blur' onClick={CloseEdit}></div>
                     <div className="modal-box">
-                    <UpdateRoom hotelId={id} />
-                        <div className='absolute top-[48.8rem] left-[18.6rem]'>
+                    <UpdateRoom roomId={id} />
+                        <div className='absolute top-[44.4rem] left-[18.8rem]'>
                             <button className="text-sm font-semibold leading-6 text-red-500" onClick={CloseEdit}>
                             Hủy
                             </button>
                         </div>
                     </div>
-                </div>} */}
+                </div>}
             {isDelete && (
                 <div className="modal modal-open">
                     <div className="modal-box">
                         <h3 className="font-bold text-lg">CẢNH BÁO!</h3>
-                        <p className="py-4">Bạn có chắc là xóa khách sạn này không ?</p>
+                        <p className="py-4">Bạn có chắc là xóa phòng của khách sạnnày không ?</p>
                         <div className="modal-action">
                             <button className="btn btn-md btn-success" onClick={handleDelete}>Đồng ý</button>
                             <button className="btn btn-md btn-error" onClick={CloseDelete}>Hủy</button>

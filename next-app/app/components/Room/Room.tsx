@@ -8,6 +8,7 @@ import { plus } from '@/app/utils/Icons';
 import Modal from '../Modals/Modal';
 import { useGlobalState } from '@/app/hooks/useGlobalState';
 import { useGlobalUpdate } from '@/app/hooks/useGlobalUpdate';
+import CreateRoom from '../Modals/CreateRoom';
 
 interface Props {
     title: string;
@@ -52,7 +53,7 @@ function Room({ title }: Props) {
 
     return (
         <div className='p-2 w-full bg-white rounded-2xl overflow-hidden'>
-            {/* {modal && <Modal content={<CreateRoom />} />} */}
+            {modal && <Modal content={<CreateRoom />} />}
             <div className='flex flex-row justify-between my-5 mx-5'>
                 <h1 className='text-2xl font-extrabold'>{title}</h1>
                 <div className="flex items-center">

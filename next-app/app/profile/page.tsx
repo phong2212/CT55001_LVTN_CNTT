@@ -3,13 +3,13 @@
 import { UserProfile } from '@clerk/nextjs'
 import React from 'react'
 
-const page = () => {
+const ProfilePage = () => {
     return (
         <div className='bg-primary pb-10 h-full w-full flex items-center justify-center'>
-            <UserProfile />
+            <UserProfile routing="hash" />
 
         </div>
     )
 }
 
-export default page
+export default ProfilePage
