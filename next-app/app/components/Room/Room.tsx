@@ -26,8 +26,13 @@ interface Rooms {
     updatedAt: string;
 }
 
+interface Hotels {
+    id: string;
+    name: string;
+}
+
 function Room({ title }: Props) {
-    const { rooms, currentPageRoom, searchTermRoom, setSearchTermRoom, isLoading, totalPagesRoom, setCurrentPageRoom, openModal, modal } = useGlobalState();
+    const { rooms, currentPageRoom, searchTermRoom, setSearchTermRoom, isLoading, totalPagesRoom, setCurrentPageRoom, openModal, modal, allHotel} = useGlobalState();
     const { allRooms} = useGlobalUpdate();
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,20 +95,23 @@ function Room({ title }: Props) {
                                 </tr>
                             </thead>
                             <tbody>
-                                {rooms.map((room: Rooms) => (
-                                    <RoomItem 
-                                        key={room.id} 
-                                        id={room.id} 
-                                        hotelId={room.hotelId} 
-                                        roomType={room.roomType} 
-                                        capacityAdults={room.capacityAdults} 
-                                        capacityChildren={room.capacityChildren} 
-                                        pricePerNight={room.pricePerNight} 
-                                        numberOfRooms={room.numberOfRooms} 
-                                        createdAt={new Date(room.createdAt).toLocaleString()}
-                                        updatedAt={new Date(room.updatedAt).toLocaleString()}
-                                    />
-                                ))}
+                                {rooms.map((room: Rooms) => {
+                                    const hotelName = allHotel.find((hotel: Hotels) => hotel.id === room.hotelId);
+                                    return (
+                                        <RoomItem 
+                                            key={room.id} 
+                                            id={room.id} 
+                                            hotel={hotelName ? `${hotelName.name}` : 'Không tồn tại'}
+                                            roomType={room.roomType} 
+                                            capacityAdults={room.capacityAdults}
+                                            capacityChildren={room.capacityChildren} 
+                                            pricePerNight={room.pricePerNight} 
+                                            numberOfRooms={room.numberOfRooms} 
+                                            createdAt={new Date(room.createdAt).toLocaleString()}
+                                            updatedAt={new Date(room.updatedAt).toLocaleString()}
+                                        />
+                                    );
+                                })}
                             </tbody>
                         </table>
                     )}

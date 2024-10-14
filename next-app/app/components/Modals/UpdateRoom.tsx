@@ -9,8 +9,13 @@ interface Props {
     roomId: string;
 }
 
+interface Hotels {
+    id: string;
+    name: string;
+}
+
 function UpdateRoom({ roomId }: Props) {
-    const { closeModal, allRooms } = useGlobalState();
+    const { closeModal, allRooms, allHotel } = useGlobalState();
     const [room, setRoom] = useState({
         hotelId: '',
         roomType: '',
@@ -19,12 +24,16 @@ function UpdateRoom({ roomId }: Props) {
         pricePerNight: 0,
         numberOfRooms: 0
     });
+    const [hotelName, setHotelName] = useState('');
+    const [suggestions, setSuggestions] = useState<{ id: string; name: string }[]>([]);
 
     useEffect(() => {
         const fetchRoom = async () => {
             try {
-                const response = await axios.get(`/api/rooms/${roomId}`);
-                setRoom(response.data.room);
+                const { data } = await axios.get(`/api/rooms/${roomId}`);
+                setRoom(data.room);
+                const hotel = allHotel.find((hotel: Hotels) => hotel.id === data.room.hotelId);
+                setHotelName(hotel?.name || '');
             } catch (error) {
                 toast.error("Lỗi khi lấy thông tin phòng của khách sạn");
                 console.error(error);
@@ -32,14 +41,27 @@ function UpdateRoom({ roomId }: Props) {
         };
 
         fetchRoom();
-    }, [roomId]);
+    }, [roomId, allHotel]);
+
+    const fetchHotelSuggestions = async (searchTerm: string) => {
+        if (searchTerm) {
+            const res = await axios.get(`/api/hotels?search=${searchTerm}`);
+            setSuggestions(res.data.searching || []);
+        } else {
+            setSuggestions([]);
+        }
+    };
 
     const handleChange = (name: keyof typeof room | string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { value } = e.target;
-            setRoom(prev => ({
-                ...prev,
-                [name]: name === 'roomType' || name === 'hotelId' ? value : parseFloat(value)
-            }));
+        setRoom(prev => ({
+            ...prev,
+            [name]: name === 'roomType' || name === 'hotelId' ? value : parseFloat(value)
+        }));
+        if (name === 'hotelName') {
+            setHotelName(value);
+            fetchHotelSuggestions(value);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -86,11 +108,28 @@ function UpdateRoom({ roomId }: Props) {
             <div className="space-y-12">
                 <div className="border-b border-gray-900/10 pb-12">
                     <h2 className="text-2xl mb-8 text-center font-semibold leading-7">Chỉnh sửa phòng của khách sạn</h2>
-                    {renderInput("hotelId", "ID Khách Sạn", room.hotelId, "hotelId")} 
-                    {renderInput("roomType", "Loại Phòng", room.roomType, "roomType")} 
-                    {renderInput("capacityAdults", "Số Người Lớn", room.capacityAdults, "capacityAdults", "number")} 
-                    {renderInput("capacityChildren", "Số Trẻ Em", room.capacityChildren, "capacityChildren", "number")} 
-                    {renderInput("pricePerNight", "Giá mỗi đêm", room.pricePerNight, "pricePerNight", "number")} 
+                    {renderInput("hotelName", "Tên Khách Sạn", hotelName, "hotelName")}
+                    {hotelName && suggestions.length > 0 && (
+                        <ul className="suggestions-list absolute bg-white border border-gray-300 rounded-md shadow-lg mt-1 z-10 w-72">
+                            {suggestions.map(suggestion => (
+                                <li
+                                    key={suggestion.id}
+                                    onClick={() => {
+                                        setHotelName(suggestion.name);
+                                        setRoom(prev => ({ ...prev, hotelId: suggestion.id }));
+                                        setSuggestions([]);
+                                    }}
+                                    className="p-2 hover:bg-gray-200 cursor-pointer"
+                                >
+                                    {suggestion.name}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                    {renderInput("roomType", "Loại Phòng", room.roomType, "roomType")}
+                    {renderInput("capacityAdults", "Số Người Lớn", room.capacityAdults, "capacityAdults", "number")}
+                    {renderInput("capacityChildren", "Số Trẻ Em", room.capacityChildren, "capacityChildren", "number")}
+                    {renderInput("pricePerNight", "Giá mỗi đêm", room.pricePerNight, "pricePerNight", "number")}
                     {renderInput("numberOfRooms", "Số Phòng", room.numberOfRooms, "numberOfRooms", "number")}
                 </div>
             </div>

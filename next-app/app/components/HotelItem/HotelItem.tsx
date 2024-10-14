@@ -19,18 +19,18 @@ interface Props {
     updatedAt: string;
 }
 
-function HotelItem({ id, name, location, city, rating, description,amenities, createdAt, updatedAt}: Props) {
+function HotelItem({ id, name, location, city, rating, description, amenities, createdAt, updatedAt }: Props) {
     const [isEdit, setIsEdit] = useState(false);
     const [isDelete, setIsDelete] = useState(false);
     const { deleteHotel } = useGlobalState();
 
     const OpenEdit = () => {
         setIsEdit(true);
-      };
-    
-      const CloseEdit = () => {
+    };
+
+    const CloseEdit = () => {
         setIsEdit(false);
-      };
+    };
 
     const OpenDelete = () => {
         setIsDelete(true);
@@ -69,29 +69,32 @@ function HotelItem({ id, name, location, city, rating, description,amenities, cr
                     </button>
                 </td>
             </tr>
-             {isEdit && <div className="modal modal-open">
-                <div className='absolute top-0 left-0 w-full h-screen blur' onClick={CloseEdit}></div>
-                    <div className="modal-box">
-                    <UpdateHotel hotelId={id} />
-                        <div className='absolute top-[48.8rem] left-[18.6rem]'>
-                            <button className="text-sm font-semibold leading-6 text-red-500" onClick={CloseEdit}>
-                            Hủy
-                            </button>
-                        </div>
-                    </div>
-                </div>}
-            {isDelete && (
+            {isEdit || isDelete ? (
                 <div className="modal modal-open">
+                    <div className='absolute top-0 left-0 w-full h-screen blur' onClick={CloseEdit}></div>
                     <div className="modal-box">
-                        <h3 className="font-bold text-lg">CẢNH BÁO!</h3>
-                        <p className="py-4">Bạn có chắc là xóa khách sạn này không ?</p>
-                        <div className="modal-action">
-                            <button className="btn btn-md btn-success" onClick={handleDelete}>Đồng ý</button>
-                            <button className="btn btn-md btn-error" onClick={CloseDelete}>Hủy</button>
-                        </div>
+                        {isEdit ? (
+                            <>
+                                <UpdateHotel hotelId={id} />
+                                <div className='absolute top-[48.8rem] left-[18.6rem]'>
+                                    <button className="text-sm font-semibold leading-6 text-red-500" onClick={CloseEdit}>
+                                        Hủy
+                                    </button>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <h3 className="font-bold text-lg">CẢNH BÁO!</h3>
+                                <p className="py-4">Bạn có chắc là Xóa khách sạn này và các phòng liên quan không ?</p>
+                                <div className="modal-action">
+                                    <button className="btn btn-md btn-success" onClick={handleDelete}>Đồng ý</button>
+                                    <button className="btn btn-md btn-error" onClick={CloseDelete}>Hủy</button>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
-            )}
+            ) : null}
         </>
     );
 }

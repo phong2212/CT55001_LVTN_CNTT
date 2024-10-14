@@ -15,6 +15,18 @@ function CreateRoom() {
         pricePerNight: 0,
         numberOfRooms: 1,
     });
+    const [hotelName, setHotelName] = useState('');
+    const [suggestions, setSuggestions] = useState<{ id: string; name: string }[]>([]);
+
+
+    const fetchHotelSuggestions = async (searchTerm: string) => {
+        if (searchTerm) {
+            const res = await axios.get(`/api/hotels?search=${searchTerm}`);
+            setSuggestions(res.data.searching || []);
+        } else {
+            setSuggestions([]);
+        }
+    };
 
     const handleChange = (name: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { value, type } = e.target;
@@ -22,6 +34,10 @@ function CreateRoom() {
             ...prev,
             [name]: type === 'number' ? parseFloat(value) : value,
         }));
+        if (name === 'hotelName') {
+            setHotelName(value);
+            fetchHotelSuggestions(value);
+        }
     };
 
     const renderInput = (id: string, label: string, value: string | number, name: string, type: string = 'text') => (
@@ -64,7 +80,27 @@ function CreateRoom() {
             <div className="space-y-12">
                 <div className="border-b border-gray-900/10 pb-12">
                     <h2 className="text-2xl mb-8 text-center font-semibold leading-7">Tạo phòng của phòng của khách sạn mới</h2>
-                    {renderInput("hotelId", "ID Khách Sạn", formData.hotelId, "hotelId")} 
+                    <div className="relative">
+                        {renderInput("hotelName", "Tên Khách Sạn", hotelName, "hotelName", "text")}
+
+                        {hotelName && suggestions.length > 0 && (
+                            <ul className="suggestions-list absolute bg-white border border-gray-300 rounded-md shadow-lg mt-1 z-10 w-full">
+                                {suggestions.map(suggestion => (
+                                    <li 
+                                        key={suggestion.id} 
+                                        onClick={() => {
+                                            setHotelName(suggestion.name); 
+                                            setFormData(prev => ({ ...prev, hotelId: suggestion.id }));
+                                            setSuggestions([]);
+                                        }}
+                                        className="p-2 hover:bg-gray-200 cursor-pointer"
+                                    >
+                                        {suggestion.name}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
                     {renderInput("roomType", "Loại Phòng", formData.roomType, "roomType")} 
                     {renderInput("capacityAdults", "Số Người Lớn", formData.capacityAdults, "capacityAdults", "number")} 
                     {renderInput("capacityChildren", "Số Trẻ Em", formData.capacityChildren, "capacityChildren", "number")} 
