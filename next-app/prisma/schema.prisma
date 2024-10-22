@@ -54,15 +54,15 @@ model Rooms {
 }
 
 model Availability {
-  id             String   @id @default(cuid()) @map("_id")
-  roomId         String
-  date           DateTime
-  availableRooms Int
+  id        String    @id @default(cuid()) @map("_id")
+  roomId    String
+  date      DateTime?
+  available Boolean   @default(false)
 }
 
 model HotelImages {
-  id          String  @id @default(cuid()) @map("_id")
-  hotelId     String
-  imageUrl    String
-  description String?
+  id         String @id @default(cuid()) @map("_id")
+  hotelId    String
+  imageTitle String
+  imageUrl   String
 }

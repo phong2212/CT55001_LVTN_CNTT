@@ -65,12 +65,12 @@ function CreateRoom() {
             if (res.data.error) {
                 toast.error(res.data.error);
             } else {
-                toast.success("Tạo phòng của phòng của khách sạn thành công!");
+                toast.success("Tạo phòng của phòng thành công!");
                 allRooms();
                 closeModal();
             }
         } catch (error) {
-            toast.error("Tạo phòng của phòng của khách sạn thất bại!");
+            toast.error("Tạo phòng của phòng thất bại!");
             console.error(error);
         }
     };
@@ -79,7 +79,7 @@ function CreateRoom() {
         <form className='container px-20' onSubmit={handleSubmit}>
             <div className="space-y-12">
                 <div className="border-b border-gray-900/10 pb-12">
-                    <h2 className="text-2xl mb-8 text-center font-semibold leading-7">Tạo phòng của phòng của khách sạn mới</h2>
+                    <h2 className="text-2xl mb-8 text-center font-semibold leading-7">Tạo phòng mới</h2>
                     <div className="relative">
                         {renderInput("hotelName", "Tên Khách Sạn", hotelName, "hotelName", "text")}
 

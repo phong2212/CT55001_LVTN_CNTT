@@ -48,7 +48,7 @@ function UserItem({ id, email, firstname, lastname, createdAt, photo }: Props) {
                 <td>{lastname || "chưa thêm"}</td>
                 <td>{formattedCreatedAt}</td>
                 <td className="border border-gray-300 p-2 text-center">
-                    <div className="avatar cursor-pointer"> {/* Added cursor-pointer class */}
+                    <div className="avatar cursor-pointer">
                         <div className="w-16 h-16 rounded-full mx-auto">
                             <Image
                                 width={800}
