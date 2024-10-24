@@ -11,10 +11,9 @@ export default function SearchBar() {
     const [adults, setAdults] = useState(1);
     const [children, setChildren] = useState(0);
     const [rooms, setRooms] = useState(1);
-    const [pets, setPets] = useState(false);
     const { searchHotel } = useGlobalUpdate();
     const [searchTerm, setSearchTerm] = useState('');
-    const { currentLocation, setCurrentLocation, openResult } = useGlobalState();
+    const { currentLocation, setCurrentLocation, openResult, allRoom, allHotel } = useGlobalState();
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -29,14 +28,19 @@ export default function SearchBar() {
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value);
 
-    const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (searchTerm.trim() === '') {
             toast.error('Hãy điền từ khóa.');
             return;
         }
+        try {
+            searchHotel(searchTerm, adults, children, rooms);
+        } catch (err) {
+            console.log(err);
+            toast.error('Có lỗi xảy ra khi tìm kiếm.');
+        }
         openResult();
-        searchHotel(searchTerm, currentLocation);
     };
 
     const handleCurrentLocation = async () => {
@@ -46,7 +50,6 @@ export default function SearchBar() {
                 const { data } = await axios.get(`${GEOCODING_API_URL}?lat=${lat}&lon=${lng}&format=json`);
                 const city = data?.address?.city || data?.address?.town || data?.address?.village || 'Không rõ vị trí';
                 setSearchTerm(city);
-                searchHotel(city, currentLocation);
             } catch {
                 toast.error('Không thể lấy tên thành phố.');
             }
@@ -113,15 +116,6 @@ export default function SearchBar() {
                                         onChange={(e) => setRooms(Number(e.target.value))}
                                         className="w-16 p-2 border border-gray-300 rounded-md"
                                         min="1"
-                                    />
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <label>Có thú cưng</label>
-                                    <input
-                                        type="checkbox"
-                                        checked={pets}
-                                        onChange={(e) => setPets(e.target.checked)}
-                                        className="w-4 h-4"
                                     />
                                 </div>
                             </div>

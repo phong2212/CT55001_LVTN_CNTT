@@ -19,6 +19,13 @@ interface Hotels {
     distance?: number;
 }
 
+interface Imgs {
+    id: string;
+    hotelId: string;
+    imageTitle: string;
+    imageUrl: string;
+}
+
 async function getCoordinates(address: string): Promise<{ lat: number; lng: number } | null> {
     const response = await axios.get(`https://nominatim.openstreetmap.org/search`, {
         params: { q: address, format: 'json', addressdetails: 1, limit: 1 },
@@ -44,9 +51,17 @@ async function getDistance(origin: { lng: any; lat: any; }, destination: { lat: 
 }
 
 function SearchHotel() {
-    const { searchHotels, isLoadingSearch, currentLocation } = useGlobalState();
+    const { searchHotels, isLoadingSearch, currentLocation, allImg } = useGlobalState();
     const [noResults, setNoResults] = useState(false);
     const [distances, setDistances] = useState<{ [key: string]: number }>({});
+
+    useEffect(() => {
+        if (searchHotels.length === 0 && !isLoadingSearch) {
+            setNoResults(true);
+        } else {
+            setNoResults(false);
+        }
+    }, [searchHotels, isLoadingSearch]);
 
     useEffect(() => {
         const calculateDistances = async () => {
@@ -88,14 +103,16 @@ function SearchHotel() {
                 </div>
             ) : (
                 <div className='mt-8 flex flex-col space-y-4'>
-                    {sortedHotels.map((search: Hotels, index: number) => (
+                    {sortedHotels.map((search: Hotels, index: number) => {
+                        const imgUrl = allImg.find((img: Imgs) => img.hotelId === search.id);
+                        return (
                         distances[search.id] !== null && (
                             <div key={index} className='bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 flex'>
                                 <img 
-                                    src="https://shac.vn/wp-content/uploads/2016/01/thiet-ke-khach-san-5-sao-ban-dem-ruc-ro-sh-ks-0023-700x622.jpg"
+                                    src={imgUrl ? `${imgUrl.imageUrl}` : 'Không tồn tại'} 
+                                    alt={imgUrl ? `${imgUrl.imageTitle}` : 'Không tồn tại'}
                                     width={300}
                                     height={300}
-                                    alt="alt image will remove later"
                                     className='rounded-lg mr-4'
                                 />
                                 <div className='flex flex-col flex-grow'>
@@ -107,8 +124,7 @@ function SearchHotel() {
                                         ))}
                                     </div>
                                     <p>{search.description}</p>
-                                    <p className='font-bold'>Giá: 1,500,000 VNĐ</p>
-                                    <div className='flex justify-between items-center mt-4'>
+                                    <div className='flex justify-between items-center mt-20'>
                                         <button 
                                             className='btn btn-primary'
                                             onClick={() => window.open(`https://www.openstreetmap.org/search?query=${encodeURIComponent(search.location)}`, '_blank')}
@@ -121,7 +137,7 @@ function SearchHotel() {
                                 </div>
                             </div>
                         )
-                    ))}
+                    )})}
                 </div>
             )}
         </div>

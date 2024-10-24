@@ -53,7 +53,7 @@ function CreateRoom() {
                 onChange={handleChange(name)}
                 className="input input-bordered w-full max-w-xs"
                 placeholder={`Nhập ${label.toLowerCase()}...`}
-                min={type === 'number' ? '1' : undefined}
+                min={type === 'number' ? '0' : undefined}
             />
         </label>
     );

@@ -19,7 +19,7 @@ interface Hotels {
 }
 
 function HomePage() {
-    const { searchResult, random, isLoadingRandom } = useGlobalState();
+    const { searchResult, random, isLoadingRandom, allImg } = useGlobalState();
 
 
     return (
@@ -60,14 +60,19 @@ function HomePage() {
                     </div>
                 ) : (
                     < div className="grid grid-cols-3 gap-4 mt-8">
-                        {random.map((random: Hotels) => (
-                            <div key={random.id} className="relative hover:bg-black duration-300 hover:rounded-lg">
-                                <img alt={random.name} className="w-full h-52 object-cover rounded-lg transition  hover:opacity-70" />
-                                <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white px-4 py-2 rounded-b-lg">
-                                    <p className="text-xl font-semibold">{random.name}</p>
-                                </div>
-                            </div>
-                        ))}
+                        {random.map((random: Hotels) => {
+                            const imgUrl = allImg.find((img: Imgs) => img.hotelId === random.id);
+                            return (
+                                (
+                                    <div key={random.id} className="relative hover:bg-black duration-300 hover:rounded-lg">
+                                        <img src={imgUrl ? `${imgUrl.imageUrl}` : 'Không tồn tại'} alt={imgUrl ? `${imgUrl.imageTitle}` : 'Không tồn tại'} className="w-full h-52 object-cover rounded-lg transition  hover:opacity-70" />
+                                        <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white px-4 py-2 rounded-b-lg">
+                                            <p className="text-xl font-semibold">{random.name}</p>
+                                        </div>
+                                    </div>
+                                )
+                            )
+                        })}
                     </div>
                 )}
             </div>
