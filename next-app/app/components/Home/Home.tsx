@@ -5,6 +5,7 @@ import SearchBar from '../Search/SearchBar';
 import SearchHotel from '../Search/SearchHotel';
 import { useGlobalState } from '@/app/hooks/useGlobalState';
 import { star } from '@/app/utils/Icons';
+import { ChatBox } from '../ChatBox/ChatBox';
 
 interface Imgs {
     id: string;
@@ -24,7 +25,7 @@ function HomePage() {
 
     return (
         <div className='h-full caret-transparent'>
-
+            <ChatBox/>
             <div className="bg-primary h-72 caret-transparent relative">
                 <div className="flex flex-col items-center justify-center">
 

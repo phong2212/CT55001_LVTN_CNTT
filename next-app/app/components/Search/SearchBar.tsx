@@ -13,16 +13,16 @@ export default function SearchBar() {
     const [rooms, setRooms] = useState(1);
     const { searchHotel } = useGlobalUpdate();
     const [searchTerm, setSearchTerm] = useState('');
-    const { currentLocation, setCurrentLocation, openResult, allRoom, allHotel } = useGlobalState();
+    const { currentLocation, setCurrentLocation, openResult} = useGlobalState();
 
     useEffect(() => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 ({ coords: { latitude, longitude } }) => setCurrentLocation({ lat: latitude, lng: longitude }),
-                (error) => toast.error("Không thể lấy vị trí, hãy cho phép vị trí tại trang web này.")
+                // (error) => toast.error("Không thể lấy vị trí, hãy cho phép vị trí tại trang web này.")
             );
         } else {
-            toast.error("Geolocation không hợp trở website này.");
+            toast.error("Geolocation không hỗ trợ website này.");
         }
     }, []);
 
@@ -48,13 +48,13 @@ export default function SearchBar() {
             const { lat, lng } = currentLocation;
             try {
                 const { data } = await axios.get(`${GEOCODING_API_URL}?lat=${lat}&lon=${lng}&format=json`);
-                const city = data?.address?.city || data?.address?.town || data?.address?.village || 'Không rõ vị trí';
+                const city = data?.address?.city || 'Không rõ vị trí';
                 setSearchTerm(city);
             } catch {
                 toast.error('Không thể lấy tên thành phố.');
             }
         } else {
-            toast.error('không thể lấy vị trí hiện tại.');
+            toast.error('không thể lấy vị trí hiện tại vì chưa bật vị trí.');
         }
     };
 

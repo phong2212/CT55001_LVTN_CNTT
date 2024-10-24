@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import NavBar from "./components/NavBar/NavBar";
-import { ClerkProvider } from '@clerk/nextjs'; // Removed unused 'auth'
+import { ClerkProvider } from '@clerk/nextjs';
 import ContextProvider from "./providers/ContextProvider";
 import NextTopLoader from "nextjs-toploader";
 import Footer from "./components/Footer/Footer";
