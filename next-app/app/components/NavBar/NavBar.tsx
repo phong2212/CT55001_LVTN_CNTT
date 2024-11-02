@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import React from 'react'
 import { usePathname, useRouter } from 'next/navigation';
-import clsx from 'clsx';
 import { useClerk, useUser } from '@clerk/nextjs';
 import { useGlobalState } from '@/app/hooks/useGlobalState';
 import Image from 'next/image';

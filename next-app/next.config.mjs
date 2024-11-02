@@ -19,6 +19,10 @@ const nextConfig = {
             { hostname: 'img.clerk.com' },
             { hostname: 'cdn3.iconfinder.com' },
             { hostname: 'res.cloudinary.com'},
+            {
+                protocol: "https",
+                hostname: "**",
+            }
         ],
     },
     eslint: {

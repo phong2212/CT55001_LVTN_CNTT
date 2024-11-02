@@ -13,7 +13,7 @@ export default function SearchBar() {
     const [rooms, setRooms] = useState(1);
     const { searchHotel } = useGlobalUpdate();
     const [searchTerm, setSearchTerm] = useState('');
-    const { currentLocation, setCurrentLocation, openResult} = useGlobalState();
+    const { currentLocation, setCurrentLocation, openResult } = useGlobalState();
 
     useEffect(() => {
         if (navigator.geolocation) {

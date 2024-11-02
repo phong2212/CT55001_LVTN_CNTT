@@ -77,6 +77,8 @@ function HomePage() {
                     </div>
                 )}
             </div>
+            <div className='bg-base-200 p-16 m-16 rounded-badge drop-shadow-lg'>
+            </div>
         </div >
     )
 }
