@@ -14,10 +14,12 @@ export const GlobalProvider = ({ children }) => {
         isLoading: false,
         isLoadingSearch: false,
         isLoadingRandom: false,
+        isLoadingLocation: false,
         isLoadingAll: false,
     });
     const [hotels, setHotels] = useState([]);
     const [random, setRandom] = useState([]);
+    const [location, setLocation] = useState([]);
     const [allHotel, setAllHotel] = useState([]);
     const [searchHotels, setSearchHotels] = useState([]);
 
@@ -50,6 +52,8 @@ export const GlobalProvider = ({ children }) => {
     const [currentLocation, setCurrentLocation] = useState(null);
     const [searchResult, setSearchResult] = useState(false);
     const [hotelName, setHotelName] = useState([]);
+    const [hotelCity, setHotelCity] = useState('');
+
 
     const handleLoadingState = async (loadingKey, apiCall) => {
         setLoadingStates(prev => ({ ...prev, [loadingKey]: true }));
@@ -104,6 +108,12 @@ export const GlobalProvider = ({ children }) => {
             setRandom(res.data.random || []);
         });
 
+    const locationHotel = async (currentLocation) => 
+        handleLoadingState('isLoadingLocation', async () => {
+            const res = await axios.get(`/api/hotels?search=${currentLocation}`);
+            setLocation(res.data.location|| []);
+        });
+
     const searchHotel = async (search, adults, children, rooms) => {
         setLoadingStates(prev => ({ ...prev, isLoadingSearch: true }));
         try {
@@ -149,7 +159,28 @@ export const GlobalProvider = ({ children }) => {
             setLoadingStates(prev => ({ ...prev, isLoading: false }));
         }
     }
-    
+
+    const fetchCityNameFromCurrentLocation = async () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                async ({ coords: { latitude, longitude } }) => {
+                    setCurrentLocation({ lat: latitude, lng: longitude });
+                    try {
+                        const { data } = await axios.get(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+                        const city = data?.address?.city || 'Không rõ vị trí';
+                        setHotelCity(city);
+                    } catch (error) {
+                        console.error('Error fetching city name:', error);
+                        toast.error('Không thể lấy tên thành phố.');
+                    }
+                },
+                () => console.error("Không thể lấy vị trí, hãy cho phép vị trí tại trang web này.")
+            );
+        } else {
+            console.error("Geolocation không hỗ trợ website này.");
+        }
+    };
+
     const deleteHotel = async (id) => {
         await handleLoadingState('isLoading', async () => {
             try {
@@ -245,6 +276,7 @@ export const GlobalProvider = ({ children }) => {
     useEffect(() => {
         searchHotel();
         randomHotel();
+        fetchCityNameFromCurrentLocation();
         all();
     }, []);
 
@@ -297,7 +329,8 @@ export const GlobalProvider = ({ children }) => {
         isLoadingAdmin: loadingStates.isLoadingAdmin,
         isLoadingSearch: loadingStates.isLoadingSearch,
         isLoadingAll: loadingStates.isLoadingAll,
-        isLoadingRandom: loadingStates.isLoadingAll,
+        isLoadingRandom: loadingStates.isLoadingRandom,
+        isLoadingLocation: loadingStates.isLoadingLocation,
         deleteHotel,
         deleteRoom,
         deleteUser,
@@ -313,7 +346,11 @@ export const GlobalProvider = ({ children }) => {
         getHotelName,
         hotelName,
         random,
-    }), [hotels, rooms, imgs, allHotel, allRoom, allImg, searchHotels, hotelName, searchRooms, users, random, pagination, searchTerms, loadingStates, modal, isAdmin, currentLocation]);
+        location,
+        fetchCityNameFromCurrentLocation,
+        hotelCity,
+        locationHotel,
+    }), [hotels, rooms, imgs, allHotel, allRoom, allImg, searchHotels, hotelName, hotelCity, searchRooms, users, random, location, pagination, searchTerms, loadingStates, modal, isAdmin, currentLocation]);
 
     const updateContextValue = useMemo(() => ({
         allHotels,

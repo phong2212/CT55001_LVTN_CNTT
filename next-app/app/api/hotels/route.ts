@@ -89,7 +89,16 @@ export async function GET(req: Request) {
             where: {},
         });
 
-        return NextResponse.json({ hotels, all, searching, total, random, page, limit, status: 200 });
+        const location = await prisma.hotels.findMany({
+            where: {
+                OR: [
+                    { location: { contains: search, mode: 'insensitive' } },
+                    { city: { contains: search, mode: 'insensitive' } },
+                ],
+            },
+        });
+
+        return NextResponse.json({ hotels, all, searching, total, random, location, page, limit, status: 200 });
     } catch (error) {
         console.log("Lỗi lấy khách sạn: ", error);
         return NextResponse.json({ error: "Lỗi lấy khách sạn", status: 500 });

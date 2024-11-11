@@ -83,7 +83,7 @@ function SearchHotel() {
     const sortedHotels = searchHotels.sort((a: { id: string | number; }, b: { id: string | number; }) => (distances[a.id] || Infinity) - (distances[b.id] || Infinity));
 
     return (
-        <div className='bg-base-200 px-16 py-12 my-16 mx-36 rounded-badge drop-shadow-lg'>
+        <div className='bg-base-200 px-16 py-12 my-16 mx-36 rounded-badge drop-shadow-lg mt-32'>
             <div className='flex flex-row justify-between items-center'>
                 <div>
                     <div className='flex flex-row items-center'>

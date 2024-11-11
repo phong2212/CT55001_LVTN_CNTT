@@ -1,10 +1,7 @@
 import { useGlobalUpdate } from "@/app/hooks/useGlobalUpdate";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
-import axios from "axios";
 import { useGlobalState } from "@/app/hooks/useGlobalState";
-
-const GEOCODING_API_URL = 'https://nominatim.openstreetmap.org/reverse';
 
 export default function SearchBar() {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -13,18 +10,7 @@ export default function SearchBar() {
     const [rooms, setRooms] = useState(1);
     const { searchHotel } = useGlobalUpdate();
     const [searchTerm, setSearchTerm] = useState('');
-    const { currentLocation, setCurrentLocation, openResult } = useGlobalState();
-
-    useEffect(() => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                ({ coords: { latitude, longitude } }) => setCurrentLocation({ lat: latitude, lng: longitude }),
-                // (error) => toast.error("Không thể lấy vị trí, hãy cho phép vị trí tại trang web này.")
-            );
-        } else {
-            toast.error("Geolocation không hỗ trợ website này.");
-        }
-    }, []);
+    const { openResult, hotelCity } = useGlobalState();
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value);
 
@@ -43,46 +29,43 @@ export default function SearchBar() {
         openResult();
     };
 
-    const handleCurrentLocation = async () => {
-        if (currentLocation) {
-            const { lat, lng } = currentLocation;
-            try {
-                const { data } = await axios.get(`${GEOCODING_API_URL}?lat=${lat}&lon=${lng}&format=json`);
-                const city = data?.address?.city || 'Không rõ vị trí';
-                setSearchTerm(city);
-            } catch {
-                toast.error('Không thể lấy tên thành phố.');
-            }
-        } else {
-            toast.error('không thể lấy vị trí hiện tại vì chưa bật vị trí.');
-        }
+    const handleCurrentLocation = () => {
+        setSearchTerm(hotelCity);
     };
 
     return (
-        <div className="p-1 bg-accent shadow-md rounded-lg w-full max-w-3xl mx-auto">
-            <form onSubmit={handleSearchSubmit}>
-                <div className="flex space-x-1 items-center">
-                    <div className="flex-1">
-                        <input
-                            type="text"
-                            value={searchTerm}
-                            className='w-full p-3 h-14 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-                            onChange={handleSearchChange}
-                            placeholder="Tìm kiếm khách sạn..."
-                        />
-                    </div>
-                    <button
-                        type="button"
-                        onClick={handleCurrentLocation}
-                        className="p-3 h-14 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                        Vị trí hiện tại
+        <div className="p-4 bg-white shadow-md rounded-lg w-full max-w-3xl mx-auto z-10">
+            <form onSubmit={handleSearchSubmit} className="space-y-4">
+                {/* Phần tìm kiếm từ khóa */}
+                <div className="flex items-center">
+                    <input
+                        type="text"
+                        value={searchTerm}
+                        className='flex-1 p-3 h-14 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
+                        onChange={handleSearchChange}
+                        placeholder="Tìm kiếm khách sạn..."
+                    />
+                    <button className="btn btn-primary px-6 py-3 text-white rounded-lg h-14 shadow focus:outline-none ml-2 bg-blue-600 hover:bg-blue-700">
+                        Tìm kiếm
                     </button>
+                </div>
+
+                {/* Phần chọn số lượng người lớn, trẻ em, số phòng */}
+                <div className="flex justify-between items-center bg-gray-100 p-4 rounded-md">
+                    <div className="flex items-center">
+                        <button
+                            type="button"
+                            onClick={handleCurrentLocation}
+                            className="p-3 h-14 bg-blue-500 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 hover:bg-blue-600"
+                        >
+                            Vị trí hiện tại
+                        </button>
+                    </div>
                     <div className="relative">
                         <button
                             type="button"
                             onClick={() => setDropdownOpen(!isDropdownOpen)}
-                            className="p-3 h-14 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="p-3 h-14 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                             {adults} Người lớn, {children} Trẻ em, {rooms} Phòng
                         </button>
@@ -120,11 +103,6 @@ export default function SearchBar() {
                                 </div>
                             </div>
                         )}
-                    </div>
-                    <div className="text-right">
-                        <button className="btn btn-primary px-6 py-3 text-white rounded-lg h-14 shadow focus:outline-none">
-                            Tìm kiếm
-                        </button>
                     </div>
                 </div>
             </form>
