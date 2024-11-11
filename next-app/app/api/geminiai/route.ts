@@ -7,6 +7,8 @@ dotenv.config();
 
 const prisma = new PrismaClient();
 
+let conversationHistory: string[] = [];
+
 export async function POST(req: Request) {
     try {
         const { prompt } = await req.json();
@@ -14,6 +16,8 @@ export async function POST(req: Request) {
         if (!prompt) {
             return NextResponse.json({ error: "Yêu cầu nhập prompt", status: 400 });
         }
+
+        conversationHistory.push(`User: ${prompt}`);
 
         const hotels = await prisma.hotels.findMany();
         const rooms = await prisma.rooms.findMany();
@@ -26,12 +30,14 @@ export async function POST(req: Request) {
         });
 
         const systemInstruction = process.env.SYSTEM_INSTRUCTION || '';
-        const combinedPrompt = `${systemInstruction} ${JSON.stringify(combinedData)} ${prompt}`;
+        const combinedPrompt = `${systemInstruction} ${JSON.stringify(combinedData)} ${conversationHistory.join(' ')} ${prompt}`;
 
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_PUBLIC_KEY || '');
         const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
         const result = await model.generateContent(combinedPrompt);
         const generatedText = result.response.text();
+
+        conversationHistory.push(`AI: ${generatedText}`);
 
         return NextResponse.json({ text: generatedText, status: 200 });
     } catch (error) {
