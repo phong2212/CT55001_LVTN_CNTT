@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useGlobalState } from '@/app/hooks/useGlobalState';
 import 'keen-slider/keen-slider.min.css';
 import { poll } from '@/app/utils/Icons';
-import axios from 'axios';
 
 interface Hotels {
     id: string;
@@ -26,32 +25,8 @@ interface Imgs {
     imageUrl: string;
 }
 
-async function getCoordinates(address: string): Promise<{ lat: number; lng: number } | null> {
-    const response = await axios.get(`https://nominatim.openstreetmap.org/search`, {
-        params: { q: address, format: 'json', addressdetails: 1, limit: 1 },
-    });
-
-    if (response.data?.length) {
-        const { lat, lon } = response.data[0];
-        return { lat: parseFloat(lat), lng: parseFloat(lon) };
-    }
-    return null;
-}
-
-async function getDistance(origin: { lng: any; lat: any; }, destination: { lat: any; lng: any; }) {
-    const response = await axios.get(`http://router.project-osrm.org/route/v1/driving/${origin.lng},${origin.lat};${destination.lng},${destination.lat}`, {
-        params: { overview: 'false', steps: false },
-    });
-
-    if (response.data.routes?.length) {
-        return response.data.routes[0].distance / 1000;
-    }
-    console.error('Error fetching distance:', response.data);
-    return null;
-}
-
 function SearchHotel() {
-    const { searchHotels, isLoadingSearch, currentLocation, allImg } = useGlobalState();
+    const { searchHotels, isLoadingSearch, currentLocation, allImg, getCoordinates, getDistance } = useGlobalState();
     const [noResults, setNoResults] = useState(false);
     const [distances, setDistances] = useState<{ [key: string]: number }>({});
 
@@ -131,7 +106,7 @@ function SearchHotel() {
                                         >
                                             Xem bản đồ
                                         </button>
-                                        <button className='btn btn-secondary'>Xem chi tiết</button>
+                                        <a href={`/details/` + search.id} className='btn btn-secondary'>Xem chi tiết</a>
                                     </div>
 
                                 </div>

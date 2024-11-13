@@ -271,6 +271,31 @@ export const GlobalProvider = ({ children }) => {
             allImgs();
         });
     }
+
+    const getCoordinates = async (address) => {
+        const response = await axios.get(`https://nominatim.openstreetmap.org/search`, {
+            params: { q: address, format: 'json', addressdetails: 1, limit: 1 },
+        });
+
+        if (response.data?.length) {
+            const { lat, lon } = response.data[0];
+            return { lat: parseFloat(lat), lng: parseFloat(lon) };
+        }
+        return null;
+    };
+
+    const getDistance = async (origin, destination) => {
+        const response = await axios.get(`http://router.project-osrm.org/route/v1/driving/${origin.lng},${origin.lat};${destination.lng},${destination.lat}`, {
+            params: { overview: 'false', steps: false },
+        });
+
+        if (response.data.routes?.length) {
+            return response.data.routes[0].distance / 1000;
+        }
+        console.error('Error fetching distance:', response.data);
+        return null;
+    };
+
     
 
     useEffect(() => {
@@ -350,6 +375,8 @@ export const GlobalProvider = ({ children }) => {
         fetchCityNameFromCurrentLocation,
         hotelCity,
         locationHotel,
+        getCoordinates,
+        getDistance,
     }), [hotels, rooms, imgs, allHotel, allRoom, allImg, searchHotels, hotelName, hotelCity, searchRooms, users, random, location, pagination, searchTerms, loadingStates, modal, isAdmin, currentLocation]);
 
     const updateContextValue = useMemo(() => ({
