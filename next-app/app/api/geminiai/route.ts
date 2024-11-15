@@ -24,8 +24,19 @@ export async function POST(req: Request) {
 
         const combinedData = hotels.map(hotel => {
             return {
-                ...hotel,
-                rooms: rooms.filter(room => room.hotelId === hotel.id)
+                name: hotel.name,
+                location: hotel.location,
+                city: hotel.city,
+                rating: hotel.rating,
+                description: hotel.description,
+                amenities: hotel.amenities,
+                rooms: rooms.filter(room => room.hotelId === hotel.id).map(room => ({
+                    roomType: room.roomType,
+                    capacityAdults: room.capacityAdults,    
+                    capacityChildren: room.capacityChildren,
+                    pricePerNight: room.pricePerNight,
+                    numberOfRooms: room.numberOfRooms,
+                }))
             };
         });
 
