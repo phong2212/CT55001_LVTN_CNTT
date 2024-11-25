@@ -30,3 +30,4 @@ export const wifi = <i className="fa-solid fa-wifi"></i>
 export const gym = <i className="fa-solid fa-dumbbell"></i>
 export const pool = <i className="fa-solid fa-water"></i>
 export const trashcan = <i className="fa-solid fa-trash-can"></i>
+export const support = <i className="fa-solid fa-headset"></i>

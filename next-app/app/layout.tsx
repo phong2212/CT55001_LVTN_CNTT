@@ -10,7 +10,7 @@ import Footer from "./components/Footer/Footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Booking",
+  title: "Travel Hub",
   description: "The important thing about the journey is the experience!",
   icons: {
     icon: '/icon.png',

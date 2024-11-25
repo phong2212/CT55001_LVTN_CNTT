@@ -33,7 +33,7 @@ const NavBar = () => {
         <nav className='bg-primary py-3 px-32 top-0 w-full z-10 caret-transparent'>
             <div className="navbar">
                 <div className="flex-1">
-                    <Link href={"/"} className="btn btn-ghost text-3xl text-base-100">Booking</Link>
+                    <Link href={"/"} className="btn btn-ghost text-3xl text-base-100">Travel Hub</Link>
                 </div>
                 <div className="flex-none gap-2 text-base-100">
                     <button

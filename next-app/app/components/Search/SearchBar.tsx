@@ -29,14 +29,17 @@ export default function SearchBar() {
         openResult();
     };
 
-    const handleCurrentLocation = () => {
+   const handleCurrentLocation = () => {
+    if (!hotelCity) {
+        toast.error("Không có thông tin vị trí hiện tại!");
+    } else {
         setSearchTerm(hotelCity);
-    };
+    }
+};
 
     return (
         <div className="p-4 bg-white shadow-md rounded-lg w-full max-w-3xl mx-auto z-10">
             <form onSubmit={handleSearchSubmit} className="space-y-4">
-                {/* Phần tìm kiếm từ khóa */}
                 <div className="flex items-center">
                     <input
                         type="text"

@@ -273,30 +273,67 @@ export const GlobalProvider = ({ children }) => {
     }
 
     const getCoordinates = async (address) => {
-        const response = await axios.get(`https://nominatim.openstreetmap.org/search`, {
-            params: { q: address, format: 'json', addressdetails: 1, limit: 1 },
-        });
+        try {
+            const response = await axios.get(`https://nominatim.openstreetmap.org/search`, {
+                params: { q: address, format: 'json', addressdetails: 1, limit: 1 },
+            });
 
-        if (response.data?.length) {
-            const { lat, lon } = response.data[0];
-            return { lat: parseFloat(lat), lng: parseFloat(lon) };
+            if (response.data?.length) {
+                const { lat, lon } = response.data[0];
+                return { lat: parseFloat(lat), lng: parseFloat(lon) };
+            }
+            console.error('No coordinates found for the address');
+            return null;
+        } catch (error) {
+            console.error('Error fetching coordinates:', error);
+            return null;
         }
-        return null;
     };
 
     const getDistance = async (origin, destination) => {
-        const response = await axios.get(`http://router.project-osrm.org/route/v1/driving/${origin.lng},${origin.lat};${destination.lng},${destination.lat}`, {
-            params: { overview: 'false', steps: false },
-        });
-
-        if (response.data.routes?.length) {
-            return response.data.routes[0].distance / 1000;
+        try {
+            const response = await axios.get(`http://router.project-osrm.org/route/v1/driving/${origin.lng},${origin.lat};${destination.lng},${destination.lat}`, {
+                params: { overview: 'false', steps: false },
+            });
+            if (response.data.routes?.length) {
+                return response.data.routes[0].distance / 1000;
+            }
+            console.error('No routes found');
+            return null;
+        } catch (error) {
+            console.error('Error fetching distance:', error);
+            return null;
         }
-        console.error('Error fetching distance:', response.data);
-        return null;
     };
 
+    // const toRadians = (degrees) => {
+    //     return degrees * (Math.PI / 180);
+    // };
     
+    // const getDistance2 = (origin, destination) => {
+    //     const R = 6371;
+    //     const lat1 = toRadians(origin.lat);
+    //     const lon1 = toRadians(origin.lng);
+    //     const lat2 = toRadians(destination.lat);
+    //     const lon2 = toRadians(destination.lng);
+    
+    //     const dLat = lat2 - lat1;
+    //     const dLon = lon2 - lon1;
+    
+    //     const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    //               Math.cos(lat1) * Math.cos(lat2) *
+    //               Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    
+    //     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    
+    //     const distance = R * c;
+    //     return distance;
+    // };
+       
+    // const origin = { lat: 10.059237, lng: 105.769358 };
+    // const destination = { lat: 10.0324785, lng: 105.7849747 };
+    
+    // console.log(`Khoảng cách: ${getDistance2(origin, destination)} km`);
 
     useEffect(() => {
         searchHotel();

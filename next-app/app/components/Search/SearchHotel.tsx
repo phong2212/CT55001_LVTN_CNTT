@@ -55,7 +55,12 @@ function SearchHotel() {
         calculateDistances();
     }, [currentLocation, searchHotels]);
 
-    const sortedHotels = searchHotels.sort((a: { id: string | number; }, b: { id: string | number; }) => (distances[a.id] || Infinity) - (distances[b.id] || Infinity));
+    const sortedHotels = searchHotels.sort((a: Hotels, b: Hotels) => {
+        if (Object.keys(distances).length === 0) {
+            return a.name.localeCompare(b.name);
+        }
+        return (distances[a.id] || Infinity) - (distances[b.id] || Infinity);
+    });
 
     return (
         <div className='bg-base-200 px-16 py-12 my-16 mx-36 rounded-badge drop-shadow-lg mt-32'>
@@ -69,7 +74,7 @@ function SearchHotel() {
             </div>
             {noResults ? (
                 <p className="text-red-500 text-2xl mt-8">Không tìm thấy khách sạn!</p>
-            ) : isLoadingSearch || Object.keys(distances).length === 0 ? (
+            ) : (isLoadingSearch || (currentLocation && Object.keys(distances).length === 0)) ? (
                 <div className="mt-8">
                     <div className='skeleton mt-8 w-full h-56'></div>
                     <div className='skeleton mt-8 w-full h-56'></div>
@@ -92,7 +97,12 @@ function SearchHotel() {
                                 />
                                 <div className='flex flex-col flex-grow'>
                                     <a href="#" className='text-xl font-semibold text-sky-500 hover:text-sky-700 transition-colors'>{search.name}</a>
-                                    <p>{search.city} - Cách xa tầm {distances[search.id] !== undefined ? Math.ceil(distances[search.id] * 10) / 10 : distances[search.id]} km</p>
+                                    <p>
+                                        {search.city}  
+                                        {currentLocation && distances[search.id] !== undefined 
+                                            ? ` - cách xa tầm ${Math.ceil(distances[search.id] * 10) / 10} km` 
+                                            : ''}
+                                    </p>
                                     <div className='flex items-center'>
                                         {[...Array(5)].map((_, i) => (
                                             <span key={i} className={`text-yellow-500 ${i < search.rating ? 'fas fa-star' : 'far fa-star'}`}></span>

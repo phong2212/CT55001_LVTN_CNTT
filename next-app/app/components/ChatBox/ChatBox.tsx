@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import axios from 'axios';
+import { support } from '@/app/utils/Icons';
 
 interface Message {
   sender: 'user' | 'ai';
@@ -69,8 +70,11 @@ export const ChatBox = () => {
 
   return (
     <div>
-      <button className="chat-button" onClick={toggleChatBox}>
-        Chat
+      <button 
+        className="chat-button flex justify-center items-center text-2xl" 
+        onClick={toggleChatBox}
+      >
+        {support}
       </button>
       {isOpen && (
         <div className="chat-box caret-primary-content bg-white shadow-lg rounded-lg overflow-hidden">

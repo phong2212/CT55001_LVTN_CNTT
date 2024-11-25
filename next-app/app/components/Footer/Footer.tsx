@@ -25,7 +25,7 @@ const Footer = () => {
         <hr />
         <div className="footer p-10 bg-base-100 text-base-content flex justify-between caret-transparent">
             <aside>
-                <Link href={"/"} className="btn btn-ghost text-4xl text-sky-500">Booking</Link>
+                <Link href={"/"} className="btn btn-ghost text-4xl text-sky-500">Travel Hub</Link>
                 <p className='pl-5 text-lg text-semibold'>The important thing about the journey is <br /> the experience!</p>
             </aside>
             <nav>
@@ -53,7 +53,7 @@ const Footer = () => {
                 <h6 className="footer-title">Liên hệ</h6>
                 <div className='flex flex-row items-center'>
                     <span className='text-lg text-bold'>{email}</span>
-                    <p className='ml-5 text-md '> booking@gmail.com</p>
+                    <p className='ml-5 text-md '> travelhub@gmail.com</p>
                 </div >
                 <div className='flex flex-row items-center mt-2'>
                     <span className='text-lg text-bold'> {phone}</span>
