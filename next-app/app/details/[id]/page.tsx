@@ -120,7 +120,7 @@ const DetailsPage = ({ params }: { params: { id: string } }) => {
                 <div className='flex flex-col mt-6 '>
                   <div className='flex flex-row items-center'>
                     <span className='text-lg text-bold'>{email}</span>
-                    <p className='ml-5 text-md '> {hotel ? hotel.name.replace(/\s+/g, '') : 'Không tồn tại'}@gmail.com</p>
+                    <p className='ml-5 text-md '> {hotel ? hotel.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w\s]/g, '').replace(/\s+/g, '').toLowerCase() : 'Không tồn tại'}@gmail.com</p>
                   </div >
                   <div className='flex flex-row items-center mt-2'>
                     <span className='text-lg text-bold'> {phone}</span>

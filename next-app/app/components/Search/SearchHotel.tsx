@@ -29,6 +29,7 @@ function SearchHotel() {
     const { searchHotels, isLoadingSearch, currentLocation, allImg, getCoordinates, getDistance } = useGlobalState();
     const [noResults, setNoResults] = useState(false);
     const [distances, setDistances] = useState<{ [key: string]: number }>({});
+    const [sortOption, setSortOption] = useState<string | null>(null);
 
     useEffect(() => {
         if (searchHotels.length === 0 && !isLoadingSearch) {
@@ -55,12 +56,18 @@ function SearchHotel() {
         calculateDistances();
     }, [currentLocation, searchHotels]);
 
-    const sortedHotels = searchHotels.sort((a: Hotels, b: Hotels) => {
-        if (Object.keys(distances).length === 0) {
-            return a.name.localeCompare(b.name);
-        }
-        return (distances[a.id] || Infinity) - (distances[b.id] || Infinity);
-    });
+    const sortedHotels = () => {
+        if (!sortOption) return searchHotels;
+        return [...searchHotels].sort((a: Hotels, b: Hotels) => {
+            if (sortOption === 'name') {
+                return a.name.localeCompare(b.name);
+            }
+            if (sortOption === 'distance' && Object.keys(distances).length > 0) {
+                return (distances[a.id] || Infinity) - (distances[b.id] || Infinity);
+            }
+            return 0;
+        });
+    };
 
     return (
         <div className='bg-base-200 px-16 py-12 my-16 mx-36 rounded-badge drop-shadow-lg mt-32'>
@@ -70,6 +77,12 @@ function SearchHotel() {
                         <span className='btn btn-sm btn-info rounded-full text-white no-animation mr-5 hover:bg-info cursor-default'>{poll}</span>
                         <h1 className='text-3xl font-bold text-start text-sky-400'>Kết quả tìm kiếm:</h1>
                     </div>
+                </div>
+                <div className='flex space-x-4'>
+                    <button className='btn' onClick={() => setSortOption('name')}>Sắp xếp theo chữ cái</button>
+                    {currentLocation && Object.keys(distances).length > 0 && (
+                        <button className='btn' onClick={() => setSortOption('distance')}>Sắp xếp theo khoảng cách</button>
+                    )}
                 </div>
             </div>
             {noResults ? (
@@ -83,7 +96,7 @@ function SearchHotel() {
                 </div>
             ) : (
                 <div className='mt-8 flex flex-col space-y-4'>
-                    {sortedHotels.map((search: Hotels, index: number) => {
+                     {sortedHotels().map((search: Hotels, index: number) => {
                         const imgUrl = allImg.find((img: Imgs) => img.hotelId === search.id);
                         return (
                         distances[search.id] !== null && (
