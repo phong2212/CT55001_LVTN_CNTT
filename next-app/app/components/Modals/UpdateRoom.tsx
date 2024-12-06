@@ -22,7 +22,6 @@ function UpdateRoom({ roomId }: Props) {
         capacityAdults: 0,
         capacityChildren: 0,
         pricePerNight: 0,
-        numberOfRooms: 0
     });
     const [hotelName, setHotelName] = useState('');
     const [suggestions, setSuggestions] = useState<{ id: string; name: string }[]>([]);
@@ -130,7 +129,6 @@ function UpdateRoom({ roomId }: Props) {
                     {renderInput("capacityAdults", "Số Người Lớn", room.capacityAdults, "capacityAdults", "number")}
                     {renderInput("capacityChildren", "Số Trẻ Em", room.capacityChildren, "capacityChildren", "number")}
                     {renderInput("pricePerNight", "Giá mỗi đêm", room.pricePerNight, "pricePerNight", "number")}
-                    {renderInput("numberOfRooms", "Số Phòng", room.numberOfRooms, "numberOfRooms", "number")}
                 </div>
             </div>
             <div className="flex items-center justify-end gap-x-6">

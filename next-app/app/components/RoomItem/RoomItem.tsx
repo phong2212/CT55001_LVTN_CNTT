@@ -10,12 +10,11 @@ interface Props {
     capacityAdults: number;
     capacityChildren: number;
     pricePerNight: number;
-    numberOfRooms: number;
     createdAt: string;
     updatedAt: string;
 }
 
-function UserItem({ id, hotel, roomType, capacityAdults, capacityChildren, pricePerNight, numberOfRooms, createdAt, updatedAt}: Props) {
+function UserItem({ id, hotel, roomType, capacityAdults, capacityChildren, pricePerNight, createdAt, updatedAt}: Props) {
     const [modalType, setModalType] = useState<null | 'edit' | 'delete'>(null);
     const { deleteRoom } = useGlobalState();
 
@@ -40,7 +39,6 @@ function UserItem({ id, hotel, roomType, capacityAdults, capacityChildren, price
                 <td>{capacityAdults}</td>
                 <td>{capacityChildren}</td>
                 <td>{pricePerNight}</td>
-                <td>{numberOfRooms}</td>
                 <td>{createdAt}</td>
                 <td>{updatedAt}</td>
                 <td className="border border-gray-300 p-2 text-center">
@@ -61,7 +59,7 @@ function UserItem({ id, hotel, roomType, capacityAdults, capacityChildren, price
                         {modalType === 'edit' ? (
                             <>
                                 <UpdateRoom roomId={id} />
-                                <div className='absolute top-[44.4rem] left-[18.8rem]'>
+                                <div className='absolute top-[38.7rem] left-[18.8rem]'>
                                     <button className="text-sm font-semibold leading-6 text-red-500" onClick={closeModal}>
                                         Hủy
                                     </button>

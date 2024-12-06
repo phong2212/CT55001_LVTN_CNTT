@@ -10,7 +10,6 @@ interface Rooms {
   capacityAdults: number;
   capacityChildren: number;
   pricePerNight: number;
-  numberOfRooms: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -45,7 +44,7 @@ const DetailsPage = ({ params }: { params: { id: string } }) => {
   const rooms = allRoom.filter((rooms: Rooms) => rooms.hotelId === params.id);
   const [isLoading, setIsLoading] = useState(true);
   const [coordinates, setCoordinates] = useState<{ lat: number, lng: number } | null>(null);
-  const [selectedRooms, setSelectedRooms] = useState<{ room: Rooms, quantity: number }[]>([]);
+  const [selectedRooms, setSelectedRooms] = useState<{ room: Rooms }[]>([]);
   const [roomQuantities, setRoomQuantities] = useState<{ [key: string]: number }>({});
 
   useEffect(() => {
@@ -68,21 +67,18 @@ const DetailsPage = ({ params }: { params: { id: string } }) => {
   }, [hotel, img]);
 
   const handleSelectRoom = (room: Rooms) => {
-    const quantity = roomQuantities[room.id] || 0;
-    if (quantity > 0) {
       setSelectedRooms((prevSelectedRooms) => {
         const existingRoom = prevSelectedRooms.find((r) => r.room.id === room.id);
         if (existingRoom) {
           return prevSelectedRooms.map((r) =>
-            r.room.id === room.id ? { ...r, quantity } : r
+            r.room.id === room.id ? { ...r } : r
           );
         }
-        return [...prevSelectedRooms, { room, quantity }];
+        return [...prevSelectedRooms, { room }];
       });
-    }
   };
 
-  const totalPrice = selectedRooms.reduce((total, { room, quantity }) => total + room.pricePerNight * quantity, 0);
+  const totalPrice = selectedRooms.reduce((total, { room}) => total + room.pricePerNight, 0);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN').format(price) + 'đ';
@@ -225,7 +221,6 @@ const DetailsPage = ({ params }: { params: { id: string } }) => {
                           <h3 className='text-xl font-semibold'>{room.roomType}</h3>
                           <p>Sức chứa: {room.capacityAdults} người lớn, {room.capacityChildren} trẻ em</p>
                           <p>Giá mỗi đêm: {formatPrice(room.pricePerNight)}</p>
-                          <p>Phòng còn lại: {room.numberOfRooms}</p>
                         </div>
                         <div className='flex flex-col items-center'>
                           <div className='flex items-center mt-2'>
@@ -238,24 +233,8 @@ const DetailsPage = ({ params }: { params: { id: string } }) => {
                             >
                               -
                             </button>
-                            <input
-                              type='number'
-                              min='0'
-                              max={room.numberOfRooms}
-                              value={roomQuantities[room.id] || 0}
-                              onChange={(e) => setRoomQuantities({ 
-                                ...roomQuantities, 
-                                [room.id]: parseInt(e.target.value) 
-                              })}
-                              className='input input-bordered input-sm mx-2 w-16 text-center'
-                              style={{ MozAppearance: 'textfield' }}
-                            />
                             <button 
                               className='btn btn-outline btn-sm' 
-                              onClick={() => setRoomQuantities({ 
-                                ...roomQuantities, 
-                                [room.id]: Math.min(room.numberOfRooms, (roomQuantities[room.id] || 0) + 1) 
-                              })}
                             >
                               +
                             </button>
@@ -270,9 +249,9 @@ const DetailsPage = ({ params }: { params: { id: string } }) => {
                 <hr className='my-8 border-gray-300' />
                 <div className='mt-10'>
                   <h2 className='text-2xl font-bold text-center mb-5'>Đặt phòng</h2>
-                  {selectedRooms.map(({ room, quantity }) => (
+                  {selectedRooms.map(({ room }) => (
                     <div key={room.id} className='flex justify-between items-center mb-4'>
-                      <p>{room.roomType} - Số lượng: {quantity} - Giá: {formatPrice(room.pricePerNight * quantity)}</p>
+                      <p>{room.roomType} - Giá: {formatPrice(room.pricePerNight)}</p>
                       <button 
                         className='btn btn-outline btn-sm btn-error' 
                         onClick={() => setSelectedRooms(selectedRooms.filter(selectedRoom => selectedRoom.room.id !== room.id))}

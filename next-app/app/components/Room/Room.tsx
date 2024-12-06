@@ -21,7 +21,6 @@ interface Rooms {
     capacityAdults: number;
     capacityChildren: number;
     pricePerNight: number;
-    numberOfRooms: number;
     createdAt: string;
     updatedAt: string;
 }
@@ -87,7 +86,6 @@ function Room({ title }: Props) {
                                     <th className="border border-gray-300 p-2">Người lớn</th>
                                     <th className="border border-gray-300 p-2">Trẻ em</th>
                                     <th className="border border-gray-300 p-2">Giá 1 đêm</th>
-                                    <th className="border border-gray-300 p-2">Số lượng phòng</th>
                                     <th className="border border-gray-300 p-2">Thời gian tạo</th>
                                     <th className="border border-gray-300 p-2">Thời gian cập nhật</th>
                                     <th className="border border-gray-300 p-2">Sửa</th>
@@ -106,7 +104,6 @@ function Room({ title }: Props) {
                                             capacityAdults={room.capacityAdults}
                                             capacityChildren={room.capacityChildren} 
                                             pricePerNight={room.pricePerNight} 
-                                            numberOfRooms={room.numberOfRooms} 
                                             createdAt={new Date(room.createdAt).toLocaleString()}
                                             updatedAt={new Date(room.updatedAt).toLocaleString()}
                                         />

@@ -35,7 +35,6 @@ export async function POST(req: Request) {
                     capacityAdults: room.capacityAdults,    
                     capacityChildren: room.capacityChildren,
                     pricePerNight: room.pricePerNight,
-                    numberOfRooms: room.numberOfRooms,
                 }))
             };
         });

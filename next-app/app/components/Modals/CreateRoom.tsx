@@ -6,14 +6,13 @@ import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 
 function CreateRoom() {
-    const { allRooms, closeModal } = useGlobalState();
+    const { all, allRooms, allAvailabilities, closeModal } = useGlobalState();
     const [formData, setFormData] = useState({
         hotelId: '',
         roomType: '',
         capacityAdults: 0,
         capacityChildren: 0,
         pricePerNight: 0,
-        numberOfRooms: 1,
     });
     const [hotelName, setHotelName] = useState('');
     const [suggestions, setSuggestions] = useState<{ id: string; name: string }[]>([]);
@@ -67,6 +66,8 @@ function CreateRoom() {
             } else {
                 toast.success("Tạo phòng của phòng thành công!");
                 allRooms();
+                allAvailabilities();
+                all();
                 closeModal();
             }
         } catch (error) {
@@ -105,7 +106,6 @@ function CreateRoom() {
                     {renderInput("capacityAdults", "Số Người Lớn", formData.capacityAdults, "capacityAdults", "number")} 
                     {renderInput("capacityChildren", "Số Trẻ Em", formData.capacityChildren, "capacityChildren", "number")} 
                     {renderInput("pricePerNight", "Giá mỗi đêm", formData.pricePerNight, "pricePerNight", "number")} 
-                    {renderInput("numberOfRooms", "Số Phòng", formData.numberOfRooms, "numberOfRooms", "number")}
                 </div>
             </div>
             <div className="flex items-center justify-end gap-x-6">

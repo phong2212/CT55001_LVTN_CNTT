@@ -1,4 +1,4 @@
-import { user, hotel, room, image } from './Icons';
+import { user, hotel, room, image, status, gear } from './Icons';
 
 const menu = [
     {
@@ -24,6 +24,18 @@ const menu = [
         title: 'Ảnh khách sạn',
         icon: image,
         link: '/manager/hotelImgs',
+    },
+    {
+        id: 5,
+        title: 'Tình trạng phòng',
+        icon: status,
+        link: '/manager/availabilities',
+    },
+    {
+        id: 6,
+        title: 'Xử lí đặt phòng',
+        icon: gear,
+        link: '/manager/reservation',
     },
 ];
 

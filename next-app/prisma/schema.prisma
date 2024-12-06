@@ -48,16 +48,14 @@ model Rooms {
   capacityAdults   Int
   capacityChildren Int
   pricePerNight    Float
-  numberOfRooms    Int
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @default(now()) @updatedAt @map("updated_at")
 }
 
 model Availability {
-  id        String    @id @default(cuid()) @map("_id")
+  id        String  @id @default(cuid()) @map("_id")
   roomId    String
-  date      DateTime?
-  available Boolean   @default(false)
+  available Boolean @default(false)
 }
 
 model HotelImages {
@@ -65,4 +63,16 @@ model HotelImages {
   hotelId    String
   imageTitle String
   imageUrl   String
+}
+
+model Reservation {
+  id          String   @id @default(cuid()) @map("_id")
+  roomId      String
+  userId      String
+  FullName    String
+  PhoneNumber String
+  Email       String
+  Status      Boolean  @default(false)
+  DateIn      DateTime
+  DateOut     DateTime
 }

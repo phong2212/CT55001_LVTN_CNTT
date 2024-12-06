@@ -31,16 +31,22 @@ export const GlobalProvider = ({ children }) => {
     const [imgs, setImgs] = useState([]);
     const [allImg, setAllImg] = useState([]);
 
+    const [availabilities, setAvailabilities] = useState([]);
+    const [allavailable, setAllavailable] = useState([]);
+    const [filter, setFilter] = useState('all');
+
     const [users, setUsers] = useState([]);
     const [pagination, setPagination] = useState({
         currentPageHotel: 1,
         currentPageRoom: 1,
         currentPageUser: 1,
         currentPageImg: 1,
+        currentPageAvailable: 1,
         totalPagesHotel: 0,
         totalPagesRoom: 0,
         totalPagesUser: 0,
         totalPagesImg: 0,
+        totalPagesAvailable: 0,
     });
     const [searchTerms, setSearchTerms] = useState({
         searchTermHotel: '',
@@ -82,50 +88,62 @@ export const GlobalProvider = ({ children }) => {
     const openResult = () => setSearchResult(true);
 
     const all = async () => handleLoadingState('isLoadingAll', async () => {
-        const hotel = await axios.get(`/api/hotels`);
-        setAllHotel(hotel.data.all || []);
-        const room = await axios.get(`/api/rooms`);
-        setAllRoom(room.data.all || []);
-        const img = await axios.get(`/api/upload`);
-        setAllImg(img.data.all || []);
+        try {
+            const hotel = await axios.get(`/api/hotels`);
+            setAllHotel(hotel.data.all || []);
+            
+            const room = await axios.get(`/api/rooms`);
+            setAllRoom(room.data.all || []);
+            
+            const img = await axios.get(`/api/upload`);
+            setAllImg(img.data.all || []);
+            
+            const available = await axios.get(`/api/availability`);
+            setAllavailable(available.data.all || []);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
     });
-    
 
-    const allHotels = async (page = pagination.currentPageHotel, search = searchTerms.searchTermHotel) => 
-        handleLoadingState('isLoading', async () => {
-            const res = await axios.get(`/api/hotels?page=${page}&limit=4&search=${search}`);
-            setHotels(res.data.hotels || []);
-            setPagination(prev => ({
-                ...prev,
-                currentPageHotel: page,
-                totalPagesHotel: Math.ceil(res.data.total / 4),
-            }));
-        });
-    
-    const randomHotel = async () => 
+
+    const allHotels = async (page = pagination.currentPageHotel, search = searchTerms.searchTermHotel) => {
+        const res = await axios.get(`/api/hotels?page=${page}&limit=4&search=${search}`);
+        setHotels(res.data.hotels || []);
+        setPagination(prev => ({
+            ...prev,
+            currentPageHotel: page,
+            totalPagesHotel: Math.ceil(res.data.total / 4),
+        }));
+    };
+
+    const randomHotel = async () =>
         handleLoadingState('isLoadingRandom', async () => {
             const res = await axios.get(`/api/hotels`);
             setRandom(res.data.random || []);
         });
 
-    const locationHotel = async (currentLocation) => 
+    const locationHotel = async (currentLocation) =>
         handleLoadingState('isLoadingLocation', async () => {
             const res = await axios.get(`/api/hotels?search=${currentLocation}`);
-            setLocation(res.data.location|| []);
+            setLocation(res.data.location || []);
         });
 
-    const searchHotel = async (search, adults, children, rooms) => {
+    const searchHotel = async (search, adults, children) => {
         setLoadingStates(prev => ({ ...prev, isLoadingSearch: true }));
         try {
             const res = await axios.get(`/api/hotels?search=${search}`);
 
-            const matchingRooms = allRoom.filter(room => 
-                room.capacityAdults == adults && 
-                room.capacityChildren == children && 
-                room.numberOfRooms >= rooms
+            const availableRooms = allRoom.filter(room => {
+                const roomAvailability = allavailable.find(avail => avail.roomId === room.id);
+                return roomAvailability && roomAvailability.available === true;
+            });
+
+            const matchingRooms = availableRooms.filter(room =>
+                room.capacityAdults == adults &&
+                room.capacityChildren == children
             );
-            
-            const hotelIds = matchingRooms.map((room) => room.hotelId);
+
+            const hotelIds = matchingRooms.map(room => room.hotelId);
             const matchingHotels = res.data.searching.filter(hotel => hotelIds.includes(hotel.id));
             setSearchHotels(matchingHotels || []);
 
@@ -182,33 +200,38 @@ export const GlobalProvider = ({ children }) => {
     };
 
     const deleteHotel = async (id) => {
-        await handleLoadingState('isLoading', async () => {
+        {
             try {
                 const roomsToDelete = allRoom.filter(room => room.hotelId === id);
-                await Promise.all(roomsToDelete.map(room => axios.delete(`/api/rooms/${room.id}`)));
+                for (const room of roomsToDelete) {
+                    const Delavails = allavailable.filter(avail => avail.roomId === room.id);
+                    await Promise.all(Delavails.map(avail => axios.delete(`/api/availability/${avail.id}`)));
+                    await axios.delete(`/api/rooms/${room.id}`);
+                }
                 await axios.delete(`/api/hotels/${id}`);
                 toast.success("Xóa khách sạn và các phòng liên quan thành công");
                 allHotels();
                 allRooms();
+                allAvailabilities();
+                all();
             } catch (error) {
                 toast.error("Có lỗi xảy ra khi xóa khách sạn hoặc phòng");
                 console.error("Error deleting hotel or rooms:", error);
             }
-        });
+        };
     }
 
 
-    const allRooms = async (page = pagination.currentPageRoom, search = searchTerms.searchTermRoom) => 
-        handleLoadingState('isLoading', async () => {
-            const res = await axios.get(`/api/rooms?page=${page}&limit=8&search=${search}`);
-            setRooms(res.data.rooms || []);
-            setPagination(prev => ({
-                ...prev,
-                currentPageRoom: page,
-                totalPagesRoom: Math.ceil(res.data.total / 8),
-            }));
-        });
-    
+    const allRooms = async (page = pagination.currentPageRoom, search = searchTerms.searchTermRoom) => {
+        const res = await axios.get(`/api/rooms?page=${page}&limit=8&search=${search}`);
+        setRooms(res.data.rooms || []);
+        setPagination(prev => ({
+            ...prev,
+            currentPageRoom: page,
+            totalPagesRoom: Math.ceil(res.data.total / 8),
+        }));
+    };
+
     const searchRoom = async (search) => {
         setLoadingStates(prev => ({ ...prev, isLoadingSearch: true }));
         try {
@@ -222,25 +245,33 @@ export const GlobalProvider = ({ children }) => {
     };
 
     const deleteRoom = async (id) => {
-        await handleLoadingState('isLoading', async () => {
-            await axios.delete(`/api/rooms/${id}`);
-            toast.success("Xóa phòng của khách sạn thành công");
-            allRooms();
-        });
+        {
+            try {
+                const Delavails = allavailable.filter(avail => avail.roomId === id);
+                await Promise.all(Delavails.map(avail => axios.delete(`/api/availability/${avail.id}`)));
+                await axios.delete(`/api/rooms/${id}`);
+                toast.success("Xóa phòng của khách sạn thành công");
+                allRooms();
+                allAvailabilities();
+                all();
+            } catch (error) {
+                toast.error("Có lỗi xảy ra khi xóa phòng hoặc tình trạng phòng");
+                console.error("Error deleting room or availabilities:", error);
+            }
+        };
     }
 
-    const allUsers = async (page = pagination.currentPageUser, search = searchTerms.searchTermUser) => 
-        handleLoadingState('isLoading', async () => {
-            const res = await axios.get(`/api/webhooks/clerk?page=${page}&limit=4&search=${search}`);
-            if (res.data && res.data.total !== undefined) {
-                setUsers(res.data.users || []);
-                setPagination(prev => ({
-                    ...prev,
-                    currentPageUser: page,
-                    totalPagesUser: Math.ceil(res.data.total / 4),
-                }));
-            }
-        });
+    const allUsers = async (page = pagination.currentPageUser, search = searchTerms.searchTermUser) => {
+        const res = await axios.get(`/api/webhooks/clerk?page=${page}&limit=4&search=${search}`);
+        if (res.data && res.data.total !== undefined) {
+            setUsers(res.data.users || []);
+            setPagination(prev => ({
+                ...prev,
+                currentPageUser: page,
+                totalPagesUser: Math.ceil(res.data.total / 4),
+            }));
+        }
+    };
 
     const deleteUser = async (id) => {
         try {
@@ -253,23 +284,44 @@ export const GlobalProvider = ({ children }) => {
         }
     };
 
-    const allImgs = async (page = pagination.currentPageImg, search = searchTerms.searchTermImg) => 
-        handleLoadingState('isLoading', async () => {
-            const res = await axios.get(`/api/upload?page=${page}&limit=4&search=${search}`);
-            setImgs(res.data.imgs || []);
-            setPagination(prev => ({
-                ...prev,
-                currentPageImg: page,
-                totalPagesImg: Math.ceil(res.data.total / 4),
-            }));
-        });
+    const allImgs = async (page = pagination.currentPageImg, search = searchTerms.searchTermImg) => {
+        const res = await axios.get(`/api/upload?page=${page}&limit=4&search=${search}`);
+        setImgs(res.data.imgs || []);
+        setPagination(prev => ({
+            ...prev,
+            currentPageImg: page,
+            totalPagesImg: Math.ceil(res.data.total / 4),
+        }));
+    };
 
     const deleteImg = async (id) => {
-        await handleLoadingState('isLoading', async () => {
-            await axios.delete(`/api/upload/${id}`);
-            toast.success("Xóa ảnh thành công");
-            allImgs();
-        });
+        await axios.delete(`/api/upload/${id}`);
+        toast.success("Xóa ảnh thành công");
+        allImgs();
+    }
+
+    const allAvailabilities = async (page = pagination.currentPageAvailable, filter = 'all') => {
+        const res = await axios.get(`/api/availability?page=${page}&limit=6&filter=${filter}`);
+        setAvailabilities(res.data.available || []);
+        setPagination(prev => ({
+            ...prev,
+            currentPageAvailable: page,
+            totalPagesAvailable: Math.ceil(res.data.total / 6),
+        }));
+    };
+
+    const updateAvailable = async (available) => {
+        try {
+            const res = await axios.put(`/api/availability`, available);
+
+            toast.success("Cập nhật tình trạng phòng thành công!");
+
+            allAvailabilities();
+            all();
+        } catch (err) {
+            console.log(err);
+            toast.error("Cập nhật tình trạng phòng thất bại");
+        }
     }
 
     const getCoordinates = async (address) => {
@@ -309,30 +361,30 @@ export const GlobalProvider = ({ children }) => {
     // const toRadians = (degrees) => {
     //     return degrees * (Math.PI / 180);
     // };
-    
+
     // const getDistance2 = (origin, destination) => {
     //     const R = 6371;
     //     const lat1 = toRadians(origin.lat);
     //     const lon1 = toRadians(origin.lng);
     //     const lat2 = toRadians(destination.lat);
     //     const lon2 = toRadians(destination.lng);
-    
+
     //     const dLat = lat2 - lat1;
     //     const dLon = lon2 - lon1;
-    
+
     //     const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     //               Math.cos(lat1) * Math.cos(lat2) *
     //               Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    
+
     //     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    
+
     //     const distance = R * c;
     //     return distance;
     // };
-       
+
     // const origin = { lat: 10.059237, lng: 105.769358 };
     // const destination = { lat: 10.0324785, lng: 105.7849747 };
-    
+
     // console.log(`Khoảng cách: ${getDistance2(origin, destination)} km`);
 
     useEffect(() => {
@@ -345,7 +397,6 @@ export const GlobalProvider = ({ children }) => {
     useEffect(() => {
         allHotels();
     }, [pagination.currentPageHotel, searchTerms.searchTermHotel]);
-
     useEffect(() => {
         allRooms();
     }, [pagination.currentPageRoom, searchTerms.searchTermRoom]);
@@ -358,27 +409,37 @@ export const GlobalProvider = ({ children }) => {
         allImgs();
     }, [pagination.currentPageImg, searchTerms.searchTermImg]);
 
+    useEffect(() => {
+        allAvailabilities();
+    }, [pagination.currentPageAvailable]);
+
     const contextValue = useMemo(() => ({
         hotels,
         rooms,
         imgs,
         users,
+        availabilities,
+        all,
         allHotel,
         allRoom,
         allImg,
+        allavailable,
         searchHotels,
         searchRooms,
         allHotels,
         allRooms,
         allImgs,
+        allAvailabilities,
         currentPageHotel: pagination.currentPageHotel,
         currentPageRoom: pagination.currentPageRoom,
         currentPageUser: pagination.currentPageUser,
         currentPageImg: pagination.currentPageImg,
+        currentPageAvailable: pagination.currentPageAvailable,
         totalPagesHotel: pagination.totalPagesHotel,
         totalPagesRoom: pagination.totalPagesRoom,
         totalPagesUser: pagination.totalPagesUser,
         totalPagesImg: pagination.totalPagesImg,
+        totalPagesAvailable: pagination.totalPagesAvailable,
         setSearchTermHotel: (term) => setSearchTerms(prev => ({ ...prev, searchTermHotel: term })),
         setSearchTermRoom: (term) => setSearchTerms(prev => ({ ...prev, searchTermRoom: term })),
         setSearchTermUser: (term) => setSearchTerms(prev => ({ ...prev, searchTermUser: term })),
@@ -387,6 +448,7 @@ export const GlobalProvider = ({ children }) => {
         setCurrentPageRoom: (page) => setPagination(prev => ({ ...prev, currentPageRoom: page })),
         setCurrentPageUser: (page) => setPagination(prev => ({ ...prev, currentPageUser: page })),
         setCurrentPageImg: (page) => setPagination(prev => ({ ...prev, currentPageImg: page })),
+        setCurrentPageAvailable: (page) => setPagination(prev => ({ ...prev, currentPageAvailable: page })),
         isLoading: loadingStates.isLoading,
         isLoadingAdmin: loadingStates.isLoadingAdmin,
         isLoadingSearch: loadingStates.isLoadingSearch,
@@ -414,15 +476,19 @@ export const GlobalProvider = ({ children }) => {
         locationHotel,
         getCoordinates,
         getDistance,
-    }), [hotels, rooms, imgs, allHotel, allRoom, allImg, searchHotels, hotelName, hotelCity, searchRooms, users, random, location, pagination, searchTerms, loadingStates, modal, isAdmin, currentLocation]);
+        updateAvailable,
+        filter,
+        setFilter,
+    }), [hotels, rooms, imgs, availabilities, allHotel, allRoom, allImg, allavailable, searchHotels, hotelName, hotelCity, searchRooms, users, random, location, pagination, searchTerms, loadingStates, modal, isAdmin, currentLocation]);
 
     const updateContextValue = useMemo(() => ({
         allHotels,
         allRooms,
         allUsers,
+        allAvailabilities,
         searchHotel,
         searchRoom,
-    }), [allHotels, allRooms, allUsers, allImgs, searchHotel, searchRoom]);
+    }), [allHotels, allRooms, allUsers, allAvailabilities, allImgs, searchHotel, searchRoom]);
 
     return (
         <GlobalContext.Provider value={contextValue}>

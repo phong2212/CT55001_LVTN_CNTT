@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 
 function CreateImg() {
-    const { allImgs, closeModal } = useGlobalState();
+    const { all, allImgs, closeModal } = useGlobalState();
     const [formData, setFormData] = useState({
         hotelId: '',
         imageTitle: '',
@@ -108,6 +108,7 @@ function CreateImg() {
             if (!res.data.error) {
                 toast.success("Thêm hình ảnh thành công!");
                 allImgs();
+                all();
                 closeModal();
             }
         } catch (error) {

@@ -6,7 +6,7 @@ import React, { useState } from 'react'
 import toast from 'react-hot-toast';
 
 function CreateHotel() {
-    const { allHotels, closeModal } = useGlobalState();
+    const { all, allHotels, closeModal } = useGlobalState();
     const [name, setName] = useState('');
     const [location, setLocation] = useState('');
     const [city, setCity] = useState('');
@@ -72,6 +72,7 @@ function CreateHotel() {
             if (!res.data.error) {
                 toast.success("Tạo khách sạn thành công!");
                 allHotels();
+                all();
                 closeModal();
             }
         } catch (error) {

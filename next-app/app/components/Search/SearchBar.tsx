@@ -7,7 +7,6 @@ export default function SearchBar() {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
     const [adults, setAdults] = useState(1);
     const [children, setChildren] = useState(0);
-    const [rooms, setRooms] = useState(1);
     const { searchHotel } = useGlobalUpdate();
     const [searchTerm, setSearchTerm] = useState('');
     const { openResult, hotelCity } = useGlobalState();
@@ -21,7 +20,7 @@ export default function SearchBar() {
             return;
         }
         try {
-            searchHotel(searchTerm, adults, children, rooms);
+            searchHotel(searchTerm, adults, children);
         } catch (err) {
             console.log(err);
             toast.error('Có lỗi xảy ra khi tìm kiếm.');
@@ -53,7 +52,6 @@ export default function SearchBar() {
                     </button>
                 </div>
 
-                {/* Phần chọn số lượng người lớn, trẻ em, số phòng */}
                 <div className="flex justify-between items-center bg-gray-100 p-4 rounded-md">
                     <div className="flex items-center">
                         <button
@@ -70,7 +68,7 @@ export default function SearchBar() {
                             onClick={() => setDropdownOpen(!isDropdownOpen)}
                             className="p-3 h-14 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
-                            {adults} Người lớn, {children} Trẻ em, {rooms} Phòng
+                            {adults} Người lớn, {children} Trẻ em
                         </button>
                         {isDropdownOpen && (
                             <div className="absolute mt-2 w-64 bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-10">
@@ -92,16 +90,6 @@ export default function SearchBar() {
                                         onChange={(e) => setChildren(Number(e.target.value))}
                                         className="w-16 p-2 border border-gray-300 rounded-md"
                                         min="0"
-                                    />
-                                </div>
-                                <div className="flex justify-between items-center mb-2">
-                                    <label>Số phòng</label>
-                                    <input
-                                        type="number"
-                                        value={rooms}
-                                        onChange={(e) => setRooms(Number(e.target.value))}
-                                        className="w-16 p-2 border border-gray-300 rounded-md"
-                                        min="1"
                                     />
                                 </div>
                             </div>

@@ -42,6 +42,7 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
         const { userId } = auth();
         const id = params.id;
 
+
         if (!userId) {
             return NextResponse.json({ error: "Không có quyền truy cập", status: 401 })
         }
@@ -52,7 +53,8 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
             },
         })
 
-        return NextResponse.json(hotel);
+
+        return NextResponse.json({ hotel, status: 200 });
     } catch (error) {
         console.log("Lỗi xóa khách sạn: ", error);
         return NextResponse.json({ error: "Lỗi xóa khách sạn", status: 500 });

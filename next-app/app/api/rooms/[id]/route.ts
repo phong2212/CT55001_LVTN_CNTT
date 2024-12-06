@@ -54,13 +54,13 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
     try {
         const { userId } = auth();
-        const { hotelId , roomType, capacityAdults, capacityChildren, pricePerNight, numberOfRooms } = await req.json();
+        const { hotelId , roomType, capacityAdults, capacityChildren, pricePerNight } = await req.json();
         const id = params.id;
 
         if (!userId) {
             return NextResponse.json({ error: "Không có quyền truy cập", status: 401 });
         }
-        if (!hotelId || !roomType || !capacityAdults || !capacityChildren || !pricePerNight || !numberOfRooms) {
+        if (!hotelId || !roomType || !capacityAdults || !capacityChildren || !pricePerNight ) {
             return NextResponse.json({ error: "Vui lòng nhập đầy đủ thông tin", status: 400 })
         }
 
@@ -76,7 +76,6 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
                 capacityAdults,
                 capacityChildren,
                 pricePerNight,
-                numberOfRooms,
             }
         });
 

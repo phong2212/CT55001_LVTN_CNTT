@@ -10,9 +10,9 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Không có quyền truy cập", status: 401 })
         }
 
-        const { hotelId , roomType, capacityAdults, capacityChildren, pricePerNight, numberOfRooms } = await req.json();
+        const { hotelId , roomType, capacityAdults, capacityChildren, pricePerNight } = await req.json();
 
-        if (!hotelId || !roomType || !capacityAdults || !pricePerNight || !numberOfRooms) {
+        if (!hotelId || !roomType || !capacityAdults || !pricePerNight) {
             return NextResponse.json({ error: "Vui lòng nhập đầy đủ thông tin", status: 400 })
         }
 
@@ -27,12 +27,16 @@ export async function POST(req: Request) {
                 capacityAdults,
                 capacityChildren,
                 pricePerNight,
-                numberOfRooms,
             }
         });
 
+        const availability = await prisma.availability.create({
+            data: {
+                roomId: rooms.id,
+            }
+        });
 
-        return NextResponse.json({ rooms, status: 200 });
+        return NextResponse.json({ rooms, availability, status: 200 });
 
     } catch (error) {
         console.log("Lỗi tạo phòng: ", error);
