@@ -2,6 +2,7 @@ import { useGlobalUpdate } from "@/app/hooks/useGlobalUpdate";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useGlobalState } from "@/app/hooks/useGlobalState";
+import { useRouter } from 'next/navigation';
 
 export default function SearchBar() {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -10,6 +11,7 @@ export default function SearchBar() {
     const { searchHotel } = useGlobalUpdate();
     const [searchTerm, setSearchTerm] = useState('');
     const { openResult, hotelCity } = useGlobalState();
+    const router = useRouter();
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value);
 
@@ -21,6 +23,7 @@ export default function SearchBar() {
         }
         try {
             searchHotel(searchTerm, adults, children);
+            router.push('/searching');
         } catch (err) {
             console.log(err);
             toast.error('Có lỗi xảy ra khi tìm kiếm.');
@@ -28,13 +31,13 @@ export default function SearchBar() {
         openResult();
     };
 
-   const handleCurrentLocation = () => {
-    if (!hotelCity) {
-        toast.error("Không có thông tin vị trí hiện tại!");
-    } else {
-        setSearchTerm(hotelCity);
-    }
-};
+    const handleCurrentLocation = () => {
+        if (!hotelCity) {
+            toast.error("Không có thông tin vị trí hiện tại!");
+        } else {
+            setSearchTerm(hotelCity);
+        }
+    };
 
     return (
         <div className="p-4 bg-white shadow-md rounded-lg w-full max-w-3xl mx-auto z-10">

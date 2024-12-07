@@ -15,7 +15,7 @@ interface Hotels {
 }
 
 function UpdateRoom({ roomId }: Props) {
-    const { closeModal, allRooms, allHotel } = useGlobalState();
+    const { all, closeModal, allRooms, allHotel } = useGlobalState();
     const [room, setRoom] = useState({
         hotelId: '',
         roomType: '',
@@ -76,6 +76,7 @@ function UpdateRoom({ roomId }: Props) {
             } else {
                 toast.success("Cập nhật phòng của khách sạn thành công!");
                 allRooms();
+                all();
                 closeModal();
             }
         } catch (error) {
@@ -97,7 +98,7 @@ function UpdateRoom({ roomId }: Props) {
                 onChange={handleChange(name)}
                 className="input input-bordered w-full max-w-xs"
                 placeholder={`Nhập ${label.toLowerCase()}...`}
-                min={type === 'number' ? '1' : undefined}
+                min={type === 'number' ? '0' : undefined}
             />
         </label>
     );

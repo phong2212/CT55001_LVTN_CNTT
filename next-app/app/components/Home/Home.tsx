@@ -23,7 +23,7 @@ interface Hotels {
 }
 
 function HomePage() {
-    const { searchResult, random, isLoadingRandom, isLoadingLocation, allImg, location, hotelCity, locationHotel } = useGlobalState();
+    const {  random, isLoadingRandom, isLoadingLocation, allImg, location, hotelCity, locationHotel } = useGlobalState();
     const [loaded, setLoaded] = useState(false);
 
     React.useEffect(() => {
@@ -61,7 +61,6 @@ function HomePage() {
                     <SearchBar />
                 </div>
             </div>
-            {searchResult && <SearchHotel />}
 
 
 

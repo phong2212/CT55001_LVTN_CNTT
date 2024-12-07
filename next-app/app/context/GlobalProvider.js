@@ -35,24 +35,32 @@ export const GlobalProvider = ({ children }) => {
     const [allavailable, setAllavailable] = useState([]);
     const [filter, setFilter] = useState('all');
 
+    const [reservation, setReservation] = useState([]);
+    const [allReservation, setAllReservation] = useState([]);
+
     const [users, setUsers] = useState([]);
+    const [allUser, setAllUser] = useState([]);
+
     const [pagination, setPagination] = useState({
         currentPageHotel: 1,
         currentPageRoom: 1,
         currentPageUser: 1,
         currentPageImg: 1,
         currentPageAvailable: 1,
+        currentPageReservation: 1,
         totalPagesHotel: 0,
         totalPagesRoom: 0,
         totalPagesUser: 0,
         totalPagesImg: 0,
         totalPagesAvailable: 0,
+        totalPagesReservation: 0,
     });
     const [searchTerms, setSearchTerms] = useState({
         searchTermHotel: '',
         searchTermRoom: '',
         searchTermUser: '',
         searchTermImg: '',
+        searchTermReservation: '',
     });
     const [modal, setModal] = useState(false);
     const [currentLocation, setCurrentLocation] = useState(null);
@@ -100,6 +108,12 @@ export const GlobalProvider = ({ children }) => {
             
             const available = await axios.get(`/api/availability`);
             setAllavailable(available.data.all || []);
+
+            const reservation = await axios.get(`/api/reservation`);
+            setAllReservation(reservation.data.all || []);
+
+            const user = await axios.get(`/api/webhooks/clerk`);
+            setAllUser(user.data.all || []);
         } catch (error) {
             console.error('Error fetching data:', error);
         }
@@ -131,6 +145,8 @@ export const GlobalProvider = ({ children }) => {
     const searchHotel = async (search, adults, children) => {
         setLoadingStates(prev => ({ ...prev, isLoadingSearch: true }));
         try {
+            all();
+            all();
             const res = await axios.get(`/api/hotels?search=${search}`);
 
             const availableRooms = allRoom.filter(room => {
@@ -146,7 +162,7 @@ export const GlobalProvider = ({ children }) => {
             const hotelIds = matchingRooms.map(room => room.hotelId);
             const matchingHotels = res.data.searching.filter(hotel => hotelIds.includes(hotel.id));
             setSearchHotels(matchingHotels || []);
-
+           
         } catch (err) {
             console.log(err);
         } finally {
@@ -324,6 +340,39 @@ export const GlobalProvider = ({ children }) => {
         }
     }
 
+    const allReservations = async (page = pagination.currentPageReservation, search = searchTerms.searchTermReservation) => {
+        const res = await axios.get(`/api/reservation?page=${page}&limit=6&search=${search}`);
+        if (res.data && res.data.total !== undefined) {
+        setReservation(res.data.reservation || []);
+        setPagination(prev => ({
+            ...prev,
+            currentPageReservation: page,
+            totalPagesReservation: Math.ceil(res.data.total / 6),
+        }));
+    } else { toast.error("Lỗi lấy đơn đặt phòng"); }
+    };
+
+    const updateStatus = async (status) => {
+        try {
+            const res = await axios.put(`/api/reservation`, status);
+
+            toast.success("Duyệt đơn đặt phòng thành công!");
+
+            allReservations();
+            all();
+        } catch (err) {
+            console.log(err);
+            toast.error("Duyệt đơn đặt phòng thất bại");
+        }
+    }
+
+    const deleteReservation = async (id) => {
+        await axios.delete(`/api/reservation/${id}`);
+        toast.success("Xóa đơn đặt phòng thành công");
+        allReservations();
+        all();
+    }
+
     const getCoordinates = async (address) => {
         try {
             const response = await axios.get(`https://nominatim.openstreetmap.org/search`, {
@@ -413,42 +462,54 @@ export const GlobalProvider = ({ children }) => {
         allAvailabilities();
     }, [pagination.currentPageAvailable]);
 
+    useEffect(() => {
+        allReservations();
+    }, [pagination.currentPageReservation, searchTerms.searchTermReservation]);
+
     const contextValue = useMemo(() => ({
         hotels,
         rooms,
         imgs,
         users,
         availabilities,
+        reservation,
         all,
         allHotel,
         allRoom,
         allImg,
         allavailable,
+        allReservation,
+        allUser,
         searchHotels,
         searchRooms,
         allHotels,
         allRooms,
         allImgs,
         allAvailabilities,
+        allReservations,
         currentPageHotel: pagination.currentPageHotel,
         currentPageRoom: pagination.currentPageRoom,
         currentPageUser: pagination.currentPageUser,
         currentPageImg: pagination.currentPageImg,
         currentPageAvailable: pagination.currentPageAvailable,
+        currentPageReservation: pagination.currentPageReservation,
         totalPagesHotel: pagination.totalPagesHotel,
         totalPagesRoom: pagination.totalPagesRoom,
         totalPagesUser: pagination.totalPagesUser,
         totalPagesImg: pagination.totalPagesImg,
         totalPagesAvailable: pagination.totalPagesAvailable,
+        totalPagesReservation: pagination.totalPagesReservation,
         setSearchTermHotel: (term) => setSearchTerms(prev => ({ ...prev, searchTermHotel: term })),
         setSearchTermRoom: (term) => setSearchTerms(prev => ({ ...prev, searchTermRoom: term })),
         setSearchTermUser: (term) => setSearchTerms(prev => ({ ...prev, searchTermUser: term })),
         setSearchTermImg: (term) => setSearchTerms(prev => ({ ...prev, searchTermImg: term })),
+        setSearchTermReservation: (term) => setSearchTerms(prev => ({ ...prev, searchTermReservation: term })),
         setCurrentPageHotel: (page) => setPagination(prev => ({ ...prev, currentPageHotel: page })),
         setCurrentPageRoom: (page) => setPagination(prev => ({ ...prev, currentPageRoom: page })),
         setCurrentPageUser: (page) => setPagination(prev => ({ ...prev, currentPageUser: page })),
         setCurrentPageImg: (page) => setPagination(prev => ({ ...prev, currentPageImg: page })),
         setCurrentPageAvailable: (page) => setPagination(prev => ({ ...prev, currentPageAvailable: page })),
+        setCurrentPageReservation: (page) => setPagination(prev => ({ ...prev, currentPageReservation: page })),
         isLoading: loadingStates.isLoading,
         isLoadingAdmin: loadingStates.isLoadingAdmin,
         isLoadingSearch: loadingStates.isLoadingSearch,
@@ -459,6 +520,7 @@ export const GlobalProvider = ({ children }) => {
         deleteRoom,
         deleteUser,
         deleteImg,
+        deleteReservation,
         modal,
         openModal,
         closeModal,
@@ -477,18 +539,20 @@ export const GlobalProvider = ({ children }) => {
         getCoordinates,
         getDistance,
         updateAvailable,
+        updateStatus,
         filter,
         setFilter,
-    }), [hotels, rooms, imgs, availabilities, allHotel, allRoom, allImg, allavailable, searchHotels, hotelName, hotelCity, searchRooms, users, random, location, pagination, searchTerms, loadingStates, modal, isAdmin, currentLocation]);
+    }), [hotels, rooms, imgs, availabilities, reservation, allHotel, allRoom, allImg, allavailable, allReservation, allUser, searchHotels, hotelName, hotelCity, searchRooms, users, random, location, pagination, searchTerms, loadingStates, modal, isAdmin, currentLocation]);
 
     const updateContextValue = useMemo(() => ({
         allHotels,
         allRooms,
         allUsers,
         allAvailabilities,
+        allReservations,
         searchHotel,
         searchRoom,
-    }), [allHotels, allRooms, allUsers, allAvailabilities, allImgs, searchHotel, searchRoom]);
+    }), [allHotels, allRooms, allUsers, allAvailabilities, allReservations, allImgs, searchHotel, searchRoom]);
 
     return (
         <GlobalContext.Provider value={contextValue}>
