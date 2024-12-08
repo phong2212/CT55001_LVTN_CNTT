@@ -330,7 +330,7 @@ function SearchHotel() {
                                         <div className='bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 flex hover:bg-gray-100'>
                                             <div className='flex'>
                                                 <img 
-                                                    src={imgUrl ? `${imgUrl.imageUrl}` : 'Không tồn tại'} 
+                                                    src={imgUrl ? `${imgUrl.imageUrl}` : 'Không t���n tại'} 
                                                     alt={imgUrl ? `${imgUrl.imageTitle}` : 'Không tồn tại'}
                                                     width={200}
                                                     height={200}
@@ -363,7 +363,7 @@ function SearchHotel() {
                                                     <div className='bg-gray-100 p-2 rounded-lg'>
                                                         <h2 className='text-lg font-bold'>Phòng rẻ nhất</h2>
                                                         <p>Loại phòng: {cheapestRoom.roomType}</p>
-                                                        <p>Giá: {cheapestRoom.pricePerNight} VND</p>
+                                                        <p>Giá: {formatCurrency(cheapestRoom.pricePerNight)}</p>
                                                     </div>
                                                 ) : (
                                                     <p className='text-red-500'>Không có phòng trống</p>

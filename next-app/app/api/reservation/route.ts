@@ -1,6 +1,7 @@
 import prisma from "@/app/utils/connect";
 import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from "next/server";
+import { io } from 'socket.io-client';
 
 export async function POST(req: Request) {
     try {
@@ -23,6 +24,23 @@ export async function POST(req: Request) {
         if (FullName.length < 3) {
             return NextResponse.json({ error: "Tên phải từ 3 kí tự trở lên", status: 400 })
         }
+        
+        const existingReservation = await prisma.reservation.findFirst({
+            where: {
+                roomId,
+                FullName,
+                PhoneNumber,
+                Email,
+                DateIn,
+                DateOut,
+                userId,
+            }
+        });
+
+        if (existingReservation) {
+            return NextResponse.json({ reservation: existingReservation, status: 200 });
+        }
+
         const reservation = await prisma.reservation.create({
             data: {
                 roomId, 
@@ -35,6 +53,10 @@ export async function POST(req: Request) {
             }
         });
 
+        // Emit sự kiện khi có đơn đặt phòng mới
+        const socket = io('http://localhost:3001');
+        socket.emit('newReservation');
+        socket.disconnect();
 
         return NextResponse.json({ reservation, status: 200 });
 

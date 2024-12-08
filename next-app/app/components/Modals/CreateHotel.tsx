@@ -86,41 +86,51 @@ function CreateHotel() {
             <div className="space-y-12">
                 <div className="border-b border-gray-900/10 pb-12">
                     <h2 className="text-2xl mb-8 text-center font-semibold leading-7">Tạo khách sạn mới</h2>
-                    {renderInput("name", "Tên khách sạn", name, "name")}
-                    {renderInput("location", "Địa chỉ khách sạn", location, "location")}
-                    {renderInput("city", "Tên thành phố", city, "city")}
-                    {renderInput("rating", "Điểm rating", rating, "rating", "number")}
-                    <label className='form-control w-full max-w-xs mt-2'>
-                        <div className="label">
-                            <span className="label-text ">Mô tả</span>
+                    
+                    <div className="grid grid-cols-2 gap-8">
+                        <div>
+                            {renderInput("name", "Tên khách sạn", name, "name")}
+                            {renderInput("location", "Địa chỉ khách sạn", location, "location")}
+                            {renderInput("city", "Tên thành phố", city, "city")}
                         </div>
-                        <textarea
-                            id="description"
-                            value={description}
-                            name="description"
-                            onChange={handleChange("description")}
-                            className="textarea textarea-bordered flex items-center"
-                            placeholder="Nhập mô tả..."
-                            rows={4}
-                        />
-                    </label>
-                    <div className="mt-4">
-                        <h3 className="text-lg font-semibold">Tiện nghi</h3>
-                            {['wifi', 'pool', 'gym'].map((amenity) => (
-                                <label className="form-control inline-block mr-4" key={amenity}>
-                                    <div className="label">
-                                        <span className="label-text ">{amenity.charAt(0).toUpperCase() + amenity.slice(1)}</span>
-                                    </div>
-                                    <input
-                                        type="checkbox"
-                                        name={amenity}
-                                        checked={amenities[amenity as keyof typeof amenities]}
-                                        onChange={handleChange(amenity)}
-                                        className="checkbox"
-                                    />
-                                </label>
-                           ))}
-                     </div>
+
+                        <div>
+                            {renderInput("rating", "Điểm rating", rating, "rating", "number")}
+                            <label className='form-control w-full max-w-xs mt-2'>
+                                <div className="label">
+                                    <span className="label-text">Mô tả</span>
+                                </div>
+                                <textarea
+                                    id="description"
+                                    value={description}
+                                    name="description"
+                                    onChange={handleChange("description")}
+                                    className="textarea textarea-bordered flex items-center"
+                                    placeholder="Nhập mô tả..."
+                                    rows={4}
+                                />
+                            </label>
+                            <div className="mt-4">
+                                <h3 className="text-lg font-semibold">Tiện nghi</h3>
+                                <div className="flex gap-4">
+                                    {['wifi', 'pool', 'gym'].map((amenity) => (
+                                        <label className="form-control" key={amenity}>
+                                            <div className="label">
+                                                <span className="label-text">{amenity.charAt(0).toUpperCase() + amenity.slice(1)}</span>
+                                            </div>
+                                            <input
+                                                type="checkbox"
+                                                name={amenity}
+                                                checked={amenities[amenity as keyof typeof amenities]}
+                                                onChange={handleChange(amenity)}
+                                                className="checkbox"
+                                            />
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div className="flex items-center justify-end gap-x-6">

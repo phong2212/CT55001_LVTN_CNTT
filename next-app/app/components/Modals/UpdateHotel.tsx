@@ -113,28 +113,38 @@ function UpdateHotel({ hotelId }: Props) {
             <div className="space-y-12">
                 <div className="border-b border-gray-900/10 pb-12">
                     <h2 className="text-2xl mb-8 text-center font-semibold leading-7">Chỉnh sửa khách sạn</h2>
-                    {renderInput("name", "Tên khách sạn", hotel.name, "name")}
-                    {renderInput("location", "Địa chỉ khách sạn", hotel.location, "location")}
-                    {renderInput("city", "Tên thành phố", hotel.city, "city")}
-                    {renderInput("rating", "Điểm rating", hotel.rating, "rating", "number")}
-                    <label className='form-control w-full max-w-xs mt-2'>
-                        <div className="label">
-                            <span className="label-text ">Mô tả</span>
-                        </div>
-                        <textarea
-                            id="description"
-                            value={hotel.description}
-                            name="description"
-                            onChange={handleChange("description")}
-                            className="textarea textarea-bordered flex items-center"
-                            placeholder="Nhập mô tả..."
-                            rows={4}
-                        />
-                    </label>
                     
+                    <div className="grid grid-cols-2 gap-x-8">
+                        <div>
+                            {renderInput("name", "Tên khách sạn", hotel.name, "name")}
+                            {renderInput("location", "Địa chỉ khách sạn", hotel.location, "location")}
+                            {renderInput("city", "Tên thành phố", hotel.city, "city")}
+                        </div>
+                        
+                        <div>
+                            {renderInput("rating", "Điểm rating", hotel.rating, "rating", "number")}
+                            <label className='form-control w-full max-w-xs mt-2'>
+                                <div className="label">
+                                    <span className="label-text">Mô tả</span>
+                                </div>
+                                <textarea
+                                    id="description"
+                                    value={hotel.description}
+                                    name="description"
+                                    onChange={handleChange("description")}
+                                    className="textarea textarea-bordered flex items-center"
+                                    placeholder="Nhập mô tả..."
+                                    rows={4}
+                                />
+                            </label>
+                        </div>
+                    </div>
+
                     <div className="mt-4">
                         <h3 className="text-lg font-semibold">Tiện nghi</h3>
-                        {['wifi', 'pool', 'gym'].map(renderCheckbox)}
+                        <div className="flex gap-x-4">
+                            {['wifi', 'pool', 'gym'].map(renderCheckbox)}
+                        </div>
                     </div>
                 </div>
             </div>

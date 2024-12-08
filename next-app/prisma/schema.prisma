@@ -73,6 +73,6 @@ model Reservation {
   PhoneNumber String
   Email       String
   Status      Boolean  @default(false)
-  DateIn      DateTime
-  DateOut     DateTime
+  DateIn      String
+  DateOut     String
 }

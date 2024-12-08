@@ -2,8 +2,8 @@
 const footer = [
     {
         id: 1,
-        title: 'Địa điểm',
-        link: '/destinations',
+        title: 'Khách sạn',
+        link: '/hotels',
     },
     {
         id: 2,

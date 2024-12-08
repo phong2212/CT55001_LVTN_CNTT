@@ -1,7 +1,6 @@
 import { useGlobalState } from '@/app/hooks/useGlobalState';
 import { trash, edit, status } from '@/app/utils/Icons';
 import React, { useState } from 'react';
-import UpdateRoom from '../Modals/UpdateRoom';
 
 interface Props {
     id: string;

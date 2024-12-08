@@ -5,6 +5,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useClerk } from '@clerk/nextjs';
 import { GlobalContext, GlobalUpdateContext } from './GlobalContext';
+import io from 'socket.io-client';
 
 export const GlobalProvider = ({ children }) => {
     const { user } = useClerk();
@@ -99,13 +100,13 @@ export const GlobalProvider = ({ children }) => {
         try {
             const hotel = await axios.get(`/api/hotels`);
             setAllHotel(hotel.data.all || []);
-            
+
             const room = await axios.get(`/api/rooms`);
             setAllRoom(room.data.all || []);
-            
+
             const img = await axios.get(`/api/upload`);
             setAllImg(img.data.all || []);
-            
+
             const available = await axios.get(`/api/availability`);
             setAllavailable(available.data.all || []);
 
@@ -145,8 +146,7 @@ export const GlobalProvider = ({ children }) => {
     const searchHotel = async (search, adults, children) => {
         setLoadingStates(prev => ({ ...prev, isLoadingSearch: true }));
         try {
-            all();
-            all();
+            await all();
             const res = await axios.get(`/api/hotels?search=${search}`);
 
             const availableRooms = allRoom.filter(room => {
@@ -162,7 +162,7 @@ export const GlobalProvider = ({ children }) => {
             const hotelIds = matchingRooms.map(room => room.hotelId);
             const matchingHotels = res.data.searching.filter(hotel => hotelIds.includes(hotel.id));
             setSearchHotels(matchingHotels || []);
-           
+
         } catch (err) {
             console.log(err);
         } finally {
@@ -226,10 +226,12 @@ export const GlobalProvider = ({ children }) => {
                 }
                 await axios.delete(`/api/hotels/${id}`);
                 toast.success("Xóa khách sạn và các phòng liên quan thành công");
-                allHotels();
-                allRooms();
-                allAvailabilities();
-                all();
+                await Promise.all([
+                    allHotels(),
+                    allRooms(),
+                    allAvailabilities(),
+                    all(),
+                ]);
             } catch (error) {
                 toast.error("Có lỗi xảy ra khi xóa khách sạn hoặc phòng");
                 console.error("Error deleting hotel or rooms:", error);
@@ -267,9 +269,11 @@ export const GlobalProvider = ({ children }) => {
                 await Promise.all(Delavails.map(avail => axios.delete(`/api/availability/${avail.id}`)));
                 await axios.delete(`/api/rooms/${id}`);
                 toast.success("Xóa phòng của khách sạn thành công");
-                allRooms();
-                allAvailabilities();
-                all();
+                await Promise.all([
+                    allRooms(),
+                    allAvailabilities(),
+                    all(),
+                ]);
             } catch (error) {
                 toast.error("Có lỗi xảy ra khi xóa phòng hoặc tình trạng phòng");
                 console.error("Error deleting room or availabilities:", error);
@@ -293,7 +297,7 @@ export const GlobalProvider = ({ children }) => {
         try {
             await axios.delete(`/api/webhooks/clerk/${id}`);
             toast.success("Xóa tài khoản thành công");
-            allUsers();
+            await allUsers();
         } catch (err) {
             console.log(err);
             toast.error("Xóa tài khoản thất bại");
@@ -313,7 +317,7 @@ export const GlobalProvider = ({ children }) => {
     const deleteImg = async (id) => {
         await axios.delete(`/api/upload/${id}`);
         toast.success("Xóa ảnh thành công");
-        allImgs();
+        await allImgs();
     }
 
     const allAvailabilities = async (page = pagination.currentPageAvailable, filter = 'all') => {
@@ -331,9 +335,10 @@ export const GlobalProvider = ({ children }) => {
             const res = await axios.put(`/api/availability`, available);
 
             toast.success("Cập nhật tình trạng phòng thành công!");
-
-            allAvailabilities();
-            all();
+            await Promise.all([
+                allAvailabilities(),
+                all(),
+            ]);
         } catch (err) {
             console.log(err);
             toast.error("Cập nhật tình trạng phòng thất bại");
@@ -343,13 +348,13 @@ export const GlobalProvider = ({ children }) => {
     const allReservations = async (page = pagination.currentPageReservation, search = searchTerms.searchTermReservation) => {
         const res = await axios.get(`/api/reservation?page=${page}&limit=6&search=${search}`);
         if (res.data && res.data.total !== undefined) {
-        setReservation(res.data.reservation || []);
-        setPagination(prev => ({
-            ...prev,
-            currentPageReservation: page,
-            totalPagesReservation: Math.ceil(res.data.total / 6),
-        }));
-    } else { toast.error("Lỗi lấy đơn đặt phòng"); }
+            setReservation(res.data.reservation || []);
+            setPagination(prev => ({
+                ...prev,
+                currentPageReservation: page,
+                totalPagesReservation: Math.ceil(res.data.total / 6),
+            }));
+        } else { toast.error("Lỗi lấy đơn đặt phòng"); }
     };
 
     const updateStatus = async (status) => {
@@ -357,9 +362,10 @@ export const GlobalProvider = ({ children }) => {
             const res = await axios.put(`/api/reservation`, status);
 
             toast.success("Duyệt đơn đặt phòng thành công!");
-
-            allReservations();
-            all();
+            await Promise.all([
+                allReservations(),
+                all(),
+            ]);
         } catch (err) {
             console.log(err);
             toast.error("Duyệt đơn đặt phòng thất bại");
@@ -369,8 +375,10 @@ export const GlobalProvider = ({ children }) => {
     const deleteReservation = async (id) => {
         await axios.delete(`/api/reservation/${id}`);
         toast.success("Xóa đơn đặt phòng thành công");
-        allReservations();
-        all();
+        await Promise.all([
+            allReservations(),
+            all(),
+        ]);
     }
 
     const getCoordinates = async (address) => {
@@ -464,6 +472,18 @@ export const GlobalProvider = ({ children }) => {
 
     useEffect(() => {
         allReservations();
+    }, [pagination.currentPageReservation, searchTerms.searchTermReservation]);
+
+    useEffect(() => {
+        const socket = io('http://localhost:3001');
+        
+        socket.on('newReservation', () => {
+            allReservations(currentPageReservation, searchTermReservation);
+        });
+
+        return () => {
+            socket.disconnect();
+        };
     }, [pagination.currentPageReservation, searchTerms.searchTermReservation]);
 
     const contextValue = useMemo(() => ({

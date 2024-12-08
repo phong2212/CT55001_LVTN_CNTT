@@ -108,28 +108,35 @@ function UpdateRoom({ roomId }: Props) {
             <div className="space-y-12">
                 <div className="border-b border-gray-900/10 pb-12">
                     <h2 className="text-2xl mb-8 text-center font-semibold leading-7">Chỉnh sửa phòng của khách sạn</h2>
-                    {renderInput("hotelName", "Tên Khách Sạn", hotelName, "hotelName")}
-                    {hotelName && suggestions.length > 0 && (
-                        <ul className="suggestions-list absolute bg-white border border-gray-300 rounded-md shadow-lg mt-1 z-10 w-72">
-                            {suggestions.map(suggestion => (
-                                <li
-                                    key={suggestion.id}
-                                    onClick={() => {
-                                        setHotelName(suggestion.name);
-                                        setRoom(prev => ({ ...prev, hotelId: suggestion.id }));
-                                        setSuggestions([]);
-                                    }}
-                                    className="p-2 hover:bg-gray-200 cursor-pointer"
-                                >
-                                    {suggestion.name}
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                    {renderInput("roomType", "Loại Phòng", room.roomType, "roomType")}
-                    {renderInput("capacityAdults", "Số Người Lớn", room.capacityAdults, "capacityAdults", "number")}
-                    {renderInput("capacityChildren", "Số Trẻ Em", room.capacityChildren, "capacityChildren", "number")}
-                    {renderInput("pricePerNight", "Giá mỗi đêm", room.pricePerNight, "pricePerNight", "number")}
+                    
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+                        <div>
+                            {renderInput("hotelName", "Tên Khách Sạn", hotelName, "hotelName")}
+                            {hotelName && suggestions.length > 0 && (
+                                <ul className="suggestions-list absolute bg-white border border-gray-300 rounded-md shadow-lg mt-1 z-10 w-72">
+                                    {suggestions.map(suggestion => (
+                                        <li
+                                            key={suggestion.id}
+                                            onClick={() => {
+                                                setHotelName(suggestion.name);
+                                                setRoom(prev => ({ ...prev, hotelId: suggestion.id }));
+                                                setSuggestions([]);
+                                            }}
+                                            className="p-2 hover:bg-gray-200 cursor-pointer"
+                                        >
+                                            {suggestion.name}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                            {renderInput("roomType", "Loại Phòng", room.roomType, "roomType")}
+                            {renderInput("capacityAdults", "Số Người Lớn", room.capacityAdults, "capacityAdults", "number")}
+                        </div>
+                        <div>
+                            {renderInput("capacityChildren", "Số Trẻ Em", room.capacityChildren, "capacityChildren", "number")}
+                            {renderInput("pricePerNight", "Giá mỗi đêm", room.pricePerNight, "pricePerNight", "number")}
+                        </div>
+                    </div>
                 </div>
             </div>
             <div className="flex items-center justify-end gap-x-6">

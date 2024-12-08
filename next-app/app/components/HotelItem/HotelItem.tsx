@@ -72,11 +72,11 @@ function HotelItem({ id, name, location, city, rating, description, amenities, c
             {isEdit || isDelete ? (
                 <div className="modal modal-open">
                     <div className='absolute top-0 left-0 w-full h-screen blur' onClick={CloseEdit}></div>
-                    <div className="modal-box">
+                    <div className="modal-box max-w-5xl">
                         {isEdit ? (
                             <>
                                 <UpdateHotel hotelId={id} />
-                                <div className='absolute top-[48.8rem] left-[18.6rem]'>
+                                <div className='absolute top-[32.8rem] left-[51.6rem]'>
                                     <button className="text-sm font-semibold leading-6 text-red-500" onClick={CloseEdit}>
                                         Hủy
                                     </button>
@@ -84,8 +84,8 @@ function HotelItem({ id, name, location, city, rating, description, amenities, c
                             </>
                         ) : (
                             <>
-                                <h3 className="font-bold text-lg">CẢNH BÁO!</h3>
-                                <p className="py-4">Bạn có chắc là Xóa khách sạn này và các phòng liên quan không ?</p>
+                                <h3 className="font-bold text-lg text-center">CẢNH BÁO!</h3>
+                                <p className="py-4 text-center">Bạn có chắc là Xóa khách sạn này và các phòng liên quan không ?</p>
                                 <div className="modal-action">
                                     <button className="btn btn-md btn-success" onClick={handleDelete}>Đồng ý</button>
                                     <button className="btn btn-md btn-error" onClick={CloseDelete}>Hủy</button>

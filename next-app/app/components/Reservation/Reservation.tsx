@@ -29,7 +29,7 @@ interface Rooms {
 }
 
 interface Users {
-    id: string;
+    clerkId: string;
     firstName: string;
     lastName: string;
 }
@@ -95,7 +95,7 @@ function Reservation({ title }: Props) {
                             <tbody>
                                 {reservation.map((reservation: Reservation) => {
                                     const roomName = allRoom.find((room: Rooms) => room.id === reservation.roomId);
-                                    const userName = allUser.find((user: Users) => user.id === reservation.userId);
+                                    const userName = allUser.find((user: Users) => user.clerkId === reservation.userId);
                                     return (
                                         <ReservationItem 
                                             key={reservation.id} 
@@ -106,8 +106,8 @@ function Reservation({ title }: Props) {
                                             PhoneNumber={reservation.PhoneNumber} 
                                             Email={reservation.Email} 
                                             Status={reservation.Status} 
-                                            DateIn={new Date(reservation.DateIn).toLocaleString()}
-                                            DateOut={new Date(reservation.DateOut).toLocaleString()}
+                                            DateIn={reservation.DateIn}
+                                            DateOut={reservation.DateOut}
                                         />
                                     );
                                 })}
