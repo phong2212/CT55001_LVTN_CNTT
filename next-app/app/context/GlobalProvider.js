@@ -5,7 +5,6 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useClerk } from '@clerk/nextjs';
 import { GlobalContext, GlobalUpdateContext } from './GlobalContext';
-import io from 'socket.io-client';
 
 export const GlobalProvider = ({ children }) => {
     const { user } = useClerk();
@@ -472,18 +471,6 @@ export const GlobalProvider = ({ children }) => {
 
     useEffect(() => {
         allReservations();
-    }, [pagination.currentPageReservation, searchTerms.searchTermReservation]);
-
-    useEffect(() => {
-        const socket = io('http://localhost:3001');
-        
-        socket.on('newReservation', () => {
-            allReservations(currentPageReservation, searchTermReservation);
-        });
-
-        return () => {
-            socket.disconnect();
-        };
     }, [pagination.currentPageReservation, searchTerms.searchTermReservation]);
 
     const contextValue = useMemo(() => ({

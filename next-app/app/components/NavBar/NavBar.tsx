@@ -70,6 +70,11 @@ const NavBar = () => {
                                     </Link>
                                 </li>
                                 {isAdmin && <li><a href={"/manager"}>Quản lý</a></li>}
+                                <li>
+                                    <Link className="justify-between" href={"/historyReservation"}>
+                                        Lịch sử đặt phòng
+                                    </Link>
+                                </li>
                                 <li><button onClick={() => signOut(() => router.push("/"))}>Đăng xuất</button></li>
                             </ul>
                         </div>

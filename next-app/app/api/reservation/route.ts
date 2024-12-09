@@ -1,7 +1,6 @@
 import prisma from "@/app/utils/connect";
 import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from "next/server";
-import { io } from 'socket.io-client';
 
 export async function POST(req: Request) {
     try {
@@ -52,11 +51,6 @@ export async function POST(req: Request) {
                 DateOut,
             }
         });
-
-        // Emit sự kiện khi có đơn đặt phòng mới
-        const socket = io('http://localhost:3001');
-        socket.emit('newReservation');
-        socket.disconnect();
 
         return NextResponse.json({ reservation, status: 200 });
 
