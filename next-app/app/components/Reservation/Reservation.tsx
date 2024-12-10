@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import SearchForm from '../SearchForm/SearchForm';
 import Pagination from '../Pagination/Pagination';
 import { useGlobalState } from '@/app/hooks/useGlobalState';
@@ -35,8 +35,16 @@ interface Users {
 }
 
 function Reservation({ title }: Props) {
-    const { reservation, currentPageReservation, searchTermReservation, setSearchTermReservation, isLoading, totalPagesReservation, setCurrentPageReservation, allRoom, allUser} = useGlobalState();
-    const { allReservations} = useGlobalUpdate();
+    const { reservation, currentPageReservation, searchTermReservation, setSearchTermReservation, isLoading, totalPagesReservation, setCurrentPageReservation, allRoom, allUser } = useGlobalState();
+    const { allReservations } = useGlobalUpdate();
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            allReservations(currentPageReservation, searchTermReservation);
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, [currentPageReservation, searchTermReservation]);
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTermReservation(e.target.value);
@@ -64,18 +72,18 @@ function Reservation({ title }: Props) {
             <div className='flex flex-row justify-between my-5 mx-5'>
                 <h1 className='text-2xl font-extrabold'>{title}</h1>
                 <div className="flex items-center">
-                    <SearchForm 
-                        searchTerm={searchTermReservation} 
-                        onSearchChange={handleSearchChange} 
-                        onSearchSubmit={handleSearchSubmit} 
+                    <SearchForm
+                        searchTerm={searchTermReservation}
+                        onSearchChange={handleSearchChange}
+                        onSearchSubmit={handleSearchSubmit}
                     />
                 </div>
             </div>
             {!isLoading ? (
                 <>
-                    {reservation.length === 0 ? ( 
+                    {reservation.length === 0 ? (
                         <div className="flex justify-center items-center my-56 ">
-                            <span className="text-gray-500 font-bold text-3xl">Chưa có đơn</span> 
+                            <span className="text-gray-500 font-bold text-3xl">Chưa có đơn</span>
                         </div>
                     ) : (
                         <table className="table w-full border-collapse border border-gray-300">
@@ -97,15 +105,15 @@ function Reservation({ title }: Props) {
                                     const roomName = allRoom.find((room: Rooms) => room.id === reservation.roomId);
                                     const userName = allUser.find((user: Users) => user.clerkId === reservation.userId);
                                     return (
-                                        <ReservationItem 
-                                            key={reservation.id} 
-                                            id={reservation.id} 
+                                        <ReservationItem
+                                            key={reservation.id}
+                                            id={reservation.id}
                                             room={roomName ? `${roomName.roomType}` : 'Không tồn tại'}
                                             user={userName ? `${userName.firstName + ' ' + userName.lastName}` : 'Không tồn tại'}
                                             FullName={reservation.FullName}
-                                            PhoneNumber={reservation.PhoneNumber} 
-                                            Email={reservation.Email} 
-                                            Status={reservation.Status} 
+                                            PhoneNumber={reservation.PhoneNumber}
+                                            Email={reservation.Email}
+                                            Status={reservation.Status}
                                             DateIn={reservation.DateIn}
                                             DateOut={reservation.DateOut}
                                         />
@@ -121,11 +129,11 @@ function Reservation({ title }: Props) {
                 </div>
             )}
             {reservation.length > 0 && (
-                <Pagination 
-                    currentPage={currentPageReservation} 
-                    totalPages={totalPagesReservation} 
-                    onNextPage={goToNextPage} 
-                    onPreviousPage={goToPreviousPage} 
+                <Pagination
+                    currentPage={currentPageReservation}
+                    totalPages={totalPagesReservation}
+                    onNextPage={goToNextPage}
+                    onPreviousPage={goToPreviousPage}
                 />
             )}
         </div>
