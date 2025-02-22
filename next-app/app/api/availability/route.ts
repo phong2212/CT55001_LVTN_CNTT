@@ -4,10 +4,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
     try {
-        const page = parseInt(req.nextUrl.searchParams.get("page") || "1", 10);
-        const limit = parseInt(req.nextUrl.searchParams.get("limit") || "6", 10);
+        const url = new URL(req.url);
+        const page = parseInt(url.searchParams.get("page") || "1", 10);
+        const limit = parseInt(url.searchParams.get("limit") || "6", 10);
         const skip = (page - 1) * limit;
-        const filter = req.nextUrl.searchParams.get("filter") || "all";
+        const filter = url.searchParams.get("filter") || "all";
 
         const whereClause = filter === "all" ? {} : { available: filter === "true" };
 
